@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "BaseObject.h"
 
 
@@ -19,19 +18,20 @@ BaseObject::~BaseObject()
 
 bool BaseObject::LoadImg(std::string path, SDL_Renderer* screen)
 {
+
     //The final texture
     SDL_Texture* newTexture = NULL;
 
     //Load image at specified path
     SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
-    if( loadedSurface != NULL )
+    if (loadedSurface != NULL)
     {
         //Color key image
         SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB( loadedSurface->format, COLOR_KEY_R, COLOR_KEY_G, COLOR_KEY_B));
 
         //Create texture from surface pixels
         newTexture = SDL_CreateTextureFromSurface(screen, loadedSurface );
-        if(newTexture != NULL )
+        if (newTexture != NULL )
         {
             //Get image dimensions
             rect_.w = loadedSurface->w;

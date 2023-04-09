@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "ExplosionObject.h"
 
 ExplosionObject::ExplosionObject(void)
@@ -82,5 +81,5 @@ void ExplosionObject::Show(SDL_Renderer* screen)
         renderQuad.h = currentClip->h;
     }
 
-    SDL_RenderCopy(screen, p_object_, currentClip, &renderQuad );
+    SDL_RenderCopy(screen, p_object_, currentClip, &renderQuad);
 }

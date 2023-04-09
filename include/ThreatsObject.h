@@ -1,20 +1,21 @@
 #ifndef THREATS_OBJECT_H_
 #define THREATS_OBJECT_H_
 
-//#include <vector>
 #include "CommonFunction.h"
 #include "BaseObject.h"
 #include "BulletObject.h"
 
+#define NUM_THREAT_1 40
+#define NUM_THREAT_2 20
 
-#define WIDHT_THREAT 44;
-#define HEIGHT_THREAT 50;
+#define WIDTH_THREAT 44
+#define HEIGHT_THREAT 50
 
-#define GRAVITY_SPEED 0.8
+#define THREAT_GRAVITY_SPEED 0.8
 #define MAX_FALL_SPEED 10
 
-#define PLAYER_SPEED 2
-#define PLAYER_HIGHT_VAL 18;
+#define THREAT_SPEED 2
+#define THREAT_HIGHT_VAL 18
 
 #define NUM_FRAME 8
 
@@ -60,9 +61,12 @@ public:
         is_alive_ = is_alive;
     }
 
-    void InitBullet(BulletObject* p_bullet, SDL_Renderer* screen);
-    void MakeBullet(SDL_Renderer* des, const int& x_limit, const int& y_limit);
-    void Reset(const int x_boder, const int y_border);
+    void InitBulletForBigThreats(BulletObject* p_bullet, SDL_Renderer* screen);
+    void InitBulletForSmallThreats(BulletObject* p_bullet,  SDL_Renderer* screen);
+    void MakeBulletForBigThreats(SDL_Renderer* des, const int& x_limit, const int& y_limit);
+    void MakeBulletForSmallThreats(SDL_Renderer* des, const int& x_limit, const int& y_limit);
+
+    void Reset(const int x_border, const int y_border);
 
     std::vector<BulletObject*> get_bullet_list() const
     {
@@ -79,11 +83,11 @@ public:
     }
     void RemoveBullet(const int& idx);
     void ResetBullet(BulletObject* p_bullet);
-    void CheckToMap(Map& g_map);
+    void CheckToMap(Map& g_map, SDL_Renderer* screen);
     void CenterEntityOnMap(Map& g_map);
-    void DoPlayer(Map& g_map);
+    void DoThreats(Map& g_map, SDL_Renderer* screen);
     void ImpMoveType(SDL_Renderer* screen);
-    void InitPlayer();
+    void InitThreats();
     void SetAnimationPos(const int& pos_x_a, const int& pos_x_b);
     void Show(SDL_Renderer* des);
     bool LoadImg(std::string path, SDL_Renderer* screen);
@@ -105,7 +109,6 @@ public:
         return height_frame_;
     }
     SDL_Rect GetRectFrame();
-public:
 
     enum TypeMove
     {

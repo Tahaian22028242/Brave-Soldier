@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "ThreatsObject.h"
 
 
@@ -11,17 +10,15 @@ ThreatsObject::ThreatsObject()
     height_frame_ = 0;
     x_val_ = 0;
     y_val_ = 0;
-    //is_alive_ = false;
     is_stop_bullet_ = false;
 
     x_pos_ = 0;
     y_pos_ = 0;
     on_ground_ = 0;
     think_time_ = 0;
-    input_type_.left_ = 1;
     frame_ = 0;
     type_move_ = STATIC_TH;
-    input_type_.left_ = 0;
+    input_type_.left_ = 1;
 }
 
 ThreatsObject::~ThreatsObject()
@@ -41,111 +38,10 @@ ThreatsObject::~ThreatsObject()
     }
 }
 
-SDL_Rect ThreatsObject::GetRectFrame()
+void ThreatsObject::InitThreats()
 {
-    SDL_Rect rect;
-    rect.x = rect_.x;
-    rect.y = rect_.y;
-    rect.w = rect_.w/NUM_FRAME;
-    rect.h = rect_.h;
-
-    return rect;
-}
-
-//void ThreatsObject::Reset(const int x_boder, const int y_border)
-//{
-//  is_stop_bullet_ = false;
-//  x_pos_ = SCREEN_WIDTH - 100;
-//  y_pos_ = SCREEN_HEIGHT*0.5;
-//  for (int i = 0; i < bullet_list_.size(); i++)
-//  {
-//    BulletObject* p_bullet = bullet_list_.at(i);
-//    if (p_bullet != NULL)
-//    {
-//      ResetBullet(p_bullet);
-//    }
-//  }
-//}
-
-void ThreatsObject::ResetBullet(BulletObject* p_bullet)
-{
-    p_bullet->SetRect(x_pos_ + 20, y_pos_ + 10);
-    p_bullet->set_x_val(15);
-}
-
-void ThreatsObject::InitBullet(BulletObject* p_bullet,  SDL_Renderer* screen)
-{
-    if (p_bullet)
-    {
-        bool ret = p_bullet->LoadImg("img//bullet_threat.png", screen);
-        if (ret)
-        {
-            p_bullet->set_is_move(true);
-            p_bullet->set_dir_bullet(BulletObject::DIR_LEFT);
-            //p_bullet->set_type(BulletObject::SPHERE);
-            p_bullet->SetRect(rect_.x + 5, rect_.y + 10);
-            p_bullet->set_x_val(15);
-            bullet_list_.push_back(p_bullet);
-        }
-    }
-}
-
-
-void ThreatsObject::MakeBullet(SDL_Renderer* des, const int& x_limit, const int& y_limit)
-{
-    if (is_alive_)
-    {
-        for (int i = 0; i < (int)bullet_list_.size(); i++)
-        {
-            BulletObject* p_bullet = bullet_list_.at(i);
-            if (p_bullet != NULL)
-            {
-                if (is_stop_bullet_ == false)
-                {
-                    if (p_bullet->get_is_move())
-                    {
-                        int distance_bullet = rect_.x + width_frame_ - p_bullet->GetRect().x;
-                        if ( distance_bullet > 0 && distance_bullet < 400)
-                        {
-                            p_bullet->HandelMove(x_limit, y_limit);
-                            p_bullet->Render(des);
-
-                        }
-                        else
-                        {
-                            p_bullet->set_is_move(false);
-                        }
-                    }
-                    else
-                    {
-                        p_bullet->set_is_move(true);
-                        p_bullet->SetRect(this->rect_.x + 5, this->rect_.y + 10);
-                    }
-                }
-            }
-        }
-    }
-}
-
-void ThreatsObject::RemoveBullet(const int& idx)
-{
-    if (bullet_list_.size() > 0 && idx < (int)bullet_list_.size())
-    {
-        BulletObject* p_bullet = bullet_list_.at(idx);
-        bullet_list_.erase(bullet_list_.begin() + idx);
-
-        if (p_bullet)
-        {
-            delete p_bullet;
-            p_bullet = NULL;
-        }
-    }
-}
-
-void ThreatsObject::InitPlayer()
-{
-    //x_pos_ = SCREEN_WIDTH - 400;
-    //y_pos_ = SCREEN_HEIGHT*0.5;
+    x_pos_ = SCREEN_WIDTH - 400;
+    y_pos_ = SCREEN_HEIGHT*0.5;
     x_val_ = 0;
     y_val_ = 0;
 
@@ -155,12 +51,22 @@ void ThreatsObject::InitPlayer()
         animation_a_ -= 256;
         animation_b_ -= 256;
     }
-    else
-        x_pos_ = 0;
+    else x_pos_ = 0;
+
     y_pos_ = 0;
     think_time_ = 0;
     input_type_.left_ = 1;
+}
 
+SDL_Rect ThreatsObject::GetRectFrame()
+{
+    SDL_Rect rect;
+    rect.x = rect_.x;
+    rect.y = rect_.y;
+    rect.w = rect_.w/NUM_FRAME;
+    rect.h = rect_.h;
+
+    return rect;
 }
 
 bool ThreatsObject::LoadImg(std::string path, SDL_Renderer* screen)
@@ -227,8 +133,8 @@ void ThreatsObject::set_clips()
 
 void ThreatsObject::SetAnimationPos(const int& pos_x_a, const int& pos_x_b)
 {
-    animation_b_ = pos_x_b;
     animation_a_ = pos_x_a;
+    animation_b_ = pos_x_b;
 }
 
 
@@ -265,12 +171,13 @@ void ThreatsObject::ImpMoveType(SDL_Renderer* screen)
     }
 }
 
-void ThreatsObject::DoPlayer(Map& g_map)
+
+void ThreatsObject::DoThreats(Map& g_map, SDL_Renderer* screen)//Threats move
 {
     if (think_time_ == 0)
     {
         x_val_ = 0;
-        y_val_ += GRAVITY_SPEED;
+        y_val_ += THREAT_GRAVITY_SPEED;
 
         if (y_val_ >= MAX_FALL_SPEED)
         {
@@ -279,68 +186,41 @@ void ThreatsObject::DoPlayer(Map& g_map)
 
         if (input_type_.left_ == 1)
         {
-            x_val_ -= PLAYER_SPEED;
+            x_val_ -= THREAT_SPEED;
         }
 
         else if (input_type_.right_ == 1)
         {
-            x_val_+= PLAYER_SPEED;
+            x_val_ += THREAT_SPEED;
         }
 
-        if (input_type_.jump_ == 1)
-        {
-            if (on_ground_ == 1)
-            {
-                y_val_ = -PLAYER_HIGHT_VAL;
-            }
+//        if (input_type_.jump_ == 1)
+//        {
+//            if (on_ground_ == 1)
+//            {
+//                y_val_ = -THREAT_HIGHT_VAL;
+//            }
+//
+//            input_type_.jump_ = 0;
+//        }
 
-            input_type_.jump_ = 0;
-        }
+        CheckToMap(g_map, screen);
 
-        CheckToMap(g_map);
-
-        //CenterEntityOnMap(g_map);
     }
 
-    if (think_time_ > 0)
+    else if (think_time_ > 0)
     {
         think_time_--;
 
         if (think_time_ == 0)
         {
-            InitPlayer();
+            InitThreats();
         }
     }
 }
 
-void ThreatsObject::CenterEntityOnMap(Map& g_map)
-{
-    g_map.start_x_ = x_pos_ - (SCREEN_WIDTH / 2);
 
-    if (g_map.start_x_ < 0)
-    {
-        g_map.start_x_ = 0;
-    }
-
-    else if (g_map.start_x_ + SCREEN_WIDTH >= g_map.max_x_)
-    {
-        g_map.start_x_= g_map.max_x_ - SCREEN_WIDTH;
-    }
-
-    g_map.start_y_ = y_pos_ - (SCREEN_HEIGHT / 2);
-
-    if (g_map.start_y_ < 0)
-    {
-        g_map.start_y_ = 0;
-    }
-
-    else if (g_map.start_y_+ SCREEN_HEIGHT >= g_map.max_y_)
-    {
-        g_map.start_y_ = g_map.max_y_ - SCREEN_HEIGHT;
-    }
-}
-
-void ThreatsObject::CheckToMap(Map& g_map)
+void ThreatsObject::CheckToMap(Map& g_map, SDL_Renderer* screen)
 {
     int x1 = 0;
     int x2 = 0;
@@ -350,16 +230,8 @@ void ThreatsObject::CheckToMap(Map& g_map)
     on_ground_ = 0;
 
     //Check Horizontal
-    int height_min =   height_frame_ ;//SDLCommonFunc::GetMin(height_frame_, TILE_SIZE);
+    int height_min = height_frame_ ;//SDLCommonFunction::GetMin(height_frame_, TILE_SIZE);
 
-    /*
-             x1,y1***x2
-             *       *
-             *       *
-             *       *
-             *y2******
-
-    */
     x1 = (x_pos_ + x_val_) / TILE_SIZE;
     x2 = (x_pos_ + x_val_ + width_frame_ - 1) / TILE_SIZE;
 
@@ -373,26 +245,32 @@ void ThreatsObject::CheckToMap(Map& g_map)
         if (x_val_ > 0) // when object is moving by right  ===>
         {
             // Check current position of map. It is not blank_tile.
-            if ((g_map.tile[y1][x2] != BLANK_TILE) || (g_map.tile[y2][x2] != BLANK_TILE))
+            if ((g_map.tile[y1][x2] != BLANK_TILE && g_map.tile[y1][x2] != STATE_MONEY) || (g_map.tile[y2][x2] != BLANK_TILE && g_map.tile[y2][x2] != STATE_MONEY))
             {
-                // Fixed post of object at current post of map.
-                // => Cannot moving when press button
-                x_pos_ = x2 * TILE_SIZE;
-                x_pos_ -= width_frame_ + 1;
-                x_val_ = 0; // cannot moving
+               // Fixed post of object at current post of map.
+               // => Cannot moving when press button
+               x_pos_ = x2 * TILE_SIZE;
+               x_pos_ -= width_frame_ + 1;
+               x_val_ -= THREAT_SPEED;
+               input_type_.left_ = 1;
+               input_type_.right_ = 0;
+               LoadImg("img//threat_left.png", screen);
             }
         }
+
         else if (x_val_ < 0) // When moving by left    <====
         {
-            if ((g_map.tile[y1][x1] != BLANK_TILE) || (g_map.tile[y2][x1] != BLANK_TILE))
+            if ((g_map.tile[y1][x1] != BLANK_TILE && g_map.tile[y1][x1] != STATE_MONEY) || (g_map.tile[y2][x1] != BLANK_TILE && g_map.tile[y2][x1] != STATE_MONEY))
             {
                 x_pos_ = (x1 + 1) * TILE_SIZE;
-                x_val_ = 0;
+                x_val_ += THREAT_SPEED;
+                input_type_.right_ = 1;
+                input_type_.left_ = 0;
+                LoadImg("img//threat_right.png", screen);
             }
         }
+
     }
-
-
     // Check vertical
     int width_min = width_frame_ ;//SDLCommonFunc::GetMin(width_frame_, TILE_SIZE);
 
@@ -407,7 +285,7 @@ void ThreatsObject::CheckToMap(Map& g_map)
         if (y_val_ > 0)
         {
             //Similar for vertical
-            if ((g_map.tile[y2][x1] != BLANK_TILE) || (g_map.tile[y2][x2] != BLANK_TILE))
+            if ((g_map.tile[y2][x1] != BLANK_TILE && g_map.tile[y2][x1] != STATE_MONEY) || (g_map.tile[y2][x2] != BLANK_TILE && g_map.tile[y2][x2] != STATE_MONEY))
             {
                 y_pos_ = y2 * TILE_SIZE;
                 y_pos_ -= height_frame_;
@@ -419,7 +297,7 @@ void ThreatsObject::CheckToMap(Map& g_map)
         }
         else if (y_val_ < 0)
         {
-            if ((g_map.tile[y1][x1] != BLANK_TILE) || (g_map.tile[y1][x2] != BLANK_TILE))
+            if ((g_map.tile[y1][x1] != BLANK_TILE && g_map.tile[y1][x1] != STATE_MONEY) || (g_map.tile[y1][x2] != BLANK_TILE && g_map.tile[y1][x2] != STATE_MONEY))
             {
                 y_pos_ = (y1 + 1) * TILE_SIZE;
 
@@ -452,7 +330,7 @@ void ThreatsObject::Show(SDL_Renderer* des)
     if (think_time_ == 0)
     {
         rect_.x = x_pos_ - map_x_;
-        rect_.y = y_pos_- map_y_;
+        rect_.y = y_pos_ - map_y_;
         frame_++;
         if( frame_ >= 8 )
         {
@@ -470,3 +348,149 @@ void ThreatsObject::Show(SDL_Renderer* des)
         SDL_RenderCopy(des, p_object_, currentClip, &renderQuad );
     }
 }
+
+void ThreatsObject::InitBulletForBigThreats(BulletObject* p_bullet,  SDL_Renderer* screen)
+{
+    if (p_bullet != NULL)
+    {
+        bool ret = p_bullet->LoadImg("img//bullet_threat.png", screen);
+        if (ret)
+        {
+            //p_bullet->LoadImgBullet(screen);
+            p_bullet->set_is_move(true);
+            p_bullet->set_bullet_dir(BulletObject::DIR_LEFT);
+            //p_bullet->set_bullet_type(BulletObject::SPHERE);
+            p_bullet->SetRect(rect_.x + 20, rect_.y + 10);
+            p_bullet->set_x_val(15);//bullet speed
+            bullet_list_.push_back(p_bullet);
+        }
+    }
+}
+
+void ThreatsObject::InitBulletForSmallThreats(BulletObject* p_bullet,  SDL_Renderer* screen)
+{
+    if (p_bullet != NULL)
+    {
+        bool ret = p_bullet->LoadImg("img//player_bullet1.png", screen);
+        if (ret)
+        {
+            //p_bullet->LoadImgBullet(screen);
+            p_bullet->set_is_move(true);
+            p_bullet->set_bullet_dir(BulletObject::DIR_LEFT);
+            //p_bullet->set_bullet_type(BulletObject::SPHERE);
+            p_bullet->SetRect(rect_.x + 5, rect_.y + 20);
+            p_bullet->set_x_val(15);//bullet speed
+            bullet_list_.push_back(p_bullet);
+        }
+    }
+}
+
+
+void ThreatsObject::MakeBulletForBigThreats(SDL_Renderer* screen, const int& x_limit, const int& y_limit)
+{
+    if (is_alive_)
+    {
+        for (int i = 0; i < (int)bullet_list_.size(); i++)
+        {
+            BulletObject* p_bullet = bullet_list_.at(i);
+            if (p_bullet != NULL)
+            {
+                if (is_stop_bullet_ == false)
+                {
+                    if (p_bullet->get_is_move())
+                    {
+                        int bullet_distance = rect_.x + width_frame_ - p_bullet->GetRect().x;
+                        if ( bullet_distance > 0 && bullet_distance < 400)
+                        {
+                            p_bullet->HandleMove(x_limit, y_limit);
+                            p_bullet->Render(screen);
+
+                        }
+                        else
+                        {
+                            p_bullet->set_is_move(false);
+                        }
+                    }
+                    else
+                    {
+                        p_bullet->set_is_move(true);
+                        p_bullet->SetRect(this->rect_.x + 5, this->rect_.y + 10);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void ThreatsObject::MakeBulletForSmallThreats(SDL_Renderer* screen, const int& x_limit, const int& y_limit)
+{
+    if (is_alive_)
+    {
+        for (int i = 0; i < (int)bullet_list_.size(); i++)
+        {
+            BulletObject* p_bullet = bullet_list_.at(i);
+            if (p_bullet != NULL)
+            {
+                if (is_stop_bullet_ == false)
+                {
+                    if (p_bullet->get_is_move())
+                    {
+                        int bullet_distance = rect_.x + width_frame_ - p_bullet->GetRect().x;
+                        if ( bullet_distance > 0 && bullet_distance < 400)
+                        {
+                            p_bullet->HandleMove(x_limit, y_limit);
+                            p_bullet->Render(screen);
+
+                        }
+                        else
+                        {
+                            p_bullet->set_is_move(false);
+                        }
+                    }
+                    else
+                    {
+                        p_bullet->set_is_move(true);
+                        p_bullet->SetRect(this->rect_.x, this->rect_.y + 20);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void ThreatsObject::RemoveBullet(const int& idx)
+{
+    if (bullet_list_.size() > 0 && idx < (int)bullet_list_.size())
+    {
+        BulletObject* p_bullet = bullet_list_.at(idx);
+        bullet_list_.erase(bullet_list_.begin() + idx);
+
+        if (p_bullet)
+        {
+            delete p_bullet;
+            p_bullet = NULL;
+        }
+    }
+}
+
+void ThreatsObject::ResetBullet(BulletObject* p_bullet)
+{
+    p_bullet->SetRect(x_pos_ + 20, y_pos_ + 10);
+    p_bullet->set_x_val(15);
+}
+
+void ThreatsObject::Reset(const int x_border, const int y_border)
+{
+    is_stop_bullet_ = false;
+    x_pos_ = SCREEN_WIDTH - 100;
+    y_pos_ = SCREEN_HEIGHT*0.5;
+    for (int i = 0; i < bullet_list_.size(); i++)
+    {
+        BulletObject* p_bullet = bullet_list_.at(i);
+        if (p_bullet != NULL)
+        {
+            ResetBullet(p_bullet);
+        }
+    }
+}
+

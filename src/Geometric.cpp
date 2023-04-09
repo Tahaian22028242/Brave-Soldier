@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Geometric.h"
 
 void Geometric::RenderRectange(const GeometricFormat& geo_size, const ColorData& color, SDL_Renderer* screen)

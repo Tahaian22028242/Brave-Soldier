@@ -6,11 +6,11 @@
 #include "CommonFunction.h"
 #include "BulletObject.h"
 
-#define GRAVITY_SPEED 0.8
+#define BOSS_GRAVITY_SPEED 0.8
 #define MAX_FALL_SPEED 10
 
-#define PLAYER_SPEED 2
-#define PLAYER_HIGHT_VAL 18;
+#define BOSS_SPEED 2
+#define BOSS_HIGHT_VAL 18;
 
 #define FRAME_NUM_32 32
 
@@ -45,7 +45,7 @@ public:
         return y_pos_;
     }
 
-    void Show(SDL_Renderer* des);
+    void Show(SDL_Renderer* screen);
     bool LoadImg(std::string path, SDL_Renderer* screen);
     void set_clips();
 
@@ -66,7 +66,7 @@ public:
     void CheckToMap(Map& g_map);
     void CenterEntityOnMap(Map& g_map);
     void DoPlayer(Map& g_map);
-    void InitPlayer();
+    void InitBoss();
     std::vector<BulletObject*> get_bullet_list() const
     {
         return bullet_list_;

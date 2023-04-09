@@ -6,11 +6,11 @@
 #include "BulletObject.h"
 #include <vector>
 
-#define GRAVITY_SPEED 0.8
+#define GRAVITY_SPEED 10
 #define MAX_FALL_SPEED 10
 
 #define PLAYER_SPEED 8
-#define PLAYER_HIGHT_VAL 18;
+#define PLAYER_HEIGHT_VAL 78
 
 
 class MainObject : public BaseObject
@@ -24,6 +24,7 @@ public:
         WALK_NONE = 0,
         WALK_RIGHT = 1,
         WALK_LEFT = 2,
+        WALK_JUMP = 3,
     };
 
     void set_clips();
@@ -49,6 +50,7 @@ public:
         p_bullet_list_ = bullet_list;
     }
 
+    void SpawnBullet(SDL_Renderer* screen);
     void HandleBullet(SDL_Renderer* des);
     void RemoveBullet(const int& idx);
 
@@ -97,6 +99,10 @@ private:
 
     int width_frame_;
     int height_frame_;
+
+    bool continuous_bullet;
+    int current_time;
+    int last_time;
 };
 
 

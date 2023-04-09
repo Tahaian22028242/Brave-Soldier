@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "ImpTimer.h"
 #include "CommonFunction.h"
 
@@ -44,7 +43,7 @@ void ImpTimer::unpause()
     }
 }
 
-int ImpTimer::get_ticks()
+int ImpTimer::get_ticks() //base on the CPU of the laptop
 {
     if( is_started_ == true )
     {

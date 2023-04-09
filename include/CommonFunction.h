@@ -11,7 +11,7 @@
 #include <SDL_ttf.h>
 
 static SDL_Window* g_window = NULL;
-static SDL_Renderer* g_screen = NULL;
+static SDL_Renderer* g_screen = NULL ;
 static SDL_Event g_event;
 
 
@@ -26,9 +26,9 @@ const int FRAMES_PER_SECOND = 25;
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 640;
 const int SCREEN_BPP = 32;
-const int SPEED_SCREEN = 2;
+const int SPEED_SCREEN = 50;
 
-const int RENDER_DRAW_COLOR = 255;
+const int RENDER_DRAW_COLOR = 0XFF;
 
 const int COLOR_KEY_R = 167;
 const int COLOR_KEY_G = 175;
@@ -36,6 +36,8 @@ const int COLOR_KEY_B = 180;
 
 static char g_name_main_right[] = {"img//player_right.png"};
 static char g_name_main_left[] = {"img//player_left.png"};
+static char g_name_main_jump_left[] = {"img//jump_left.png"};
+static char g_name_main_jump_right[] = {"img//jump_right.png"};
 
 #define TILE_SIZE 64
 #define BLANK_TILE 0
@@ -44,7 +46,7 @@ static char g_name_main_left[] = {"img//player_left.png"};
 #define MAX_MAP_Y 10
 
 #define STATE_MONEY 4
-#define  STATE_MONEY2 14
+#define STATE_MONEY2 14
 
 typedef struct Input
 {

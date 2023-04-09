@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "BossObject.h"
 
 
@@ -79,7 +78,7 @@ void BossObject::DoPlayer(Map& g_map)
     if (think_time_ == 0)
     {
         x_val_ = 0;
-        y_val_ += GRAVITY_SPEED;
+        y_val_ += BOSS_GRAVITY_SPEED;
 
         if (y_val_ >= MAX_FALL_SPEED)
         {
@@ -88,19 +87,19 @@ void BossObject::DoPlayer(Map& g_map)
 
         if (input_type_.left_ == 1)
         {
-            x_val_ -= PLAYER_SPEED;
+            x_val_ -= BOSS_SPEED;
         }
 
         else if (input_type_.right_ == 1)
         {
-            x_val_+= PLAYER_SPEED;
+            x_val_+= BOSS_SPEED;
         }
 
         if (input_type_.jump_ == 1)
         {
             if (on_ground_ == 1)
             {
-                y_val_ = -PLAYER_HIGHT_VAL;
+                y_val_ = -BOSS_HIGHT_VAL;
             }
 
             input_type_.jump_ = 0;
@@ -117,12 +116,12 @@ void BossObject::DoPlayer(Map& g_map)
 
         if (think_time_ == 0)
         {
-            InitPlayer();
+            InitBoss();
         }
     }
 }
 
-void BossObject::InitPlayer()
+void BossObject::InitBoss()
 {
     x_val_ = 0;
     y_val_ = 0;
@@ -175,16 +174,8 @@ void BossObject::CheckToMap(Map& g_map)
     on_ground_ = 0;
 
     //Check Horizontal
-    int height_min =   height_frame_ ;//SDLCommonFunc::GetMin(height_frame_, TILE_SIZE);
+    int height_min =   height_frame_ ;//SDLCommonFunction::GetMin(height_frame_, TILE_SIZE);
 
-    /*
-    x1,y1***x2
-    *       *
-    *       *
-    *       *
-    *y2******
-
-    */
     x1 = (x_pos_ + x_val_) / TILE_SIZE;
     x2 = (x_pos_ + x_val_ + width_frame_ - 1) / TILE_SIZE;
 
@@ -219,7 +210,7 @@ void BossObject::CheckToMap(Map& g_map)
 
 
     // Check vertical
-    int width_min = width_frame_;// SDLCommonFunc::GetMin(width_frame_, TILE_SIZE);
+    int width_min = width_frame_;// SDLCommonFunction::GetMin(width_frame_, TILE_SIZE);
 
     x1 = (x_pos_) / TILE_SIZE;
     x2 = (x_pos_ + width_min) / TILE_SIZE;
@@ -278,7 +269,7 @@ void BossObject::InitBullet(SDL_Renderer* screen)
     bool ret = p_bullet->LoadImg("img//boss bullet.png", screen);
     if (ret)
     {
-        p_bullet->set_dir_bullet(BulletObject::DIR_LEFT);
+        p_bullet->set_bullet_dir(BulletObject::DIR_LEFT);
         p_bullet->set_is_move(true);
         p_bullet->SetRect(rect_.x - 50, rect_.y + height_frame_ - 30);
         p_bullet->set_x_val(15);
@@ -301,7 +292,7 @@ void BossObject::MakeBullet(SDL_Renderer* des, const int& x_limit, const int& y_
         {
             if (p_bullet->get_is_move())
             {
-                p_bullet->HandelMove(x_limit, y_limit);
+                p_bullet->HandleMove(x_limit, y_limit);
                 p_bullet->Render(des);
             }
             else

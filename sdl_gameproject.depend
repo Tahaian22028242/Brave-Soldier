@@ -1,6 +1,5 @@
 # depslib dependency file v1.0
-1679719310 source:d:\sdl_gameproject\main.cpp
-	"stdafx.h"
+1681008776 source:d:\sdl_gameproject\main.cpp
 	"CommonFunction.h"
 	"BaseObject.h"
 	"GameMap.h"
@@ -12,6 +11,7 @@
 	"PlayerPower.h"
 	"Geometric.h"
 	"BossObject.h"
+	<iostream>
 
 1678809474 source:d:\hangman.2.2\draw.cpp
 	<iostream>
@@ -29,14 +29,13 @@
 	<chrono>
 	<thread>
 
-1679411291 source:d:\sdl_gameproject\src\baseobject.cpp
-	"stdafx.h"
+1680106449 source:d:\sdl_gameproject\src\baseobject.cpp
 	"BaseObject.h"
 
 1679411291 d:\sdl_gameproject\include\baseobject.h
 	"CommonFunction.h"
 
-1679719497 d:\sdl_gameproject\include\commonfunction.h
+1680020707 d:\sdl_gameproject\include\commonfunction.h
 	<windows.h>
 	<vector>
 	<string>
@@ -69,26 +68,23 @@
 1678982700 d:\sdl_gameproject\include\ammoobject.h
 	"BaseObject.h"
 
-1679477850 source:d:\sdl_gameproject\src\mainobject.cpp
-	"stdafx.h"
+1680970305 source:d:\sdl_gameproject\src\mainobject.cpp
 	"MainObject.h"
 
-1679476739 d:\sdl_gameproject\include\mainobject.h
+1680688273 d:\sdl_gameproject\include\mainobject.h
 	"CommonFunction.h"
 	"BaseObject.h"
 	"BulletObject.h"
 	<vector>
 
-1679715504 source:d:\sdl_gameproject\src\commonfunction.cpp
-	"stdafx.h"
+1680796866 source:d:\sdl_gameproject\src\commonfunction.cpp
 	"CommonFunction.h"
 
-1679411292 d:\sdl_gameproject\include\gamemap.h
+1680968912 d:\sdl_gameproject\include\gamemap.h
 	"CommonFunction.h"
 	"BaseObject.h"
 
-1679716327 source:d:\sdl_gameproject\src\gamemap.cpp
-	"stdafx.h"
+1680969718 source:d:\sdl_gameproject\src\gamemap.cpp
 	"GameMap.h"
 
 1679376905 source:d:\sdl_gameproject\src\stdafx.cpp
@@ -103,65 +99,58 @@
 1679377007 d:\sdl_gameproject\include\targetver.h
 	<SDKDDKVer.h>
 
-1679411291 source:d:\sdl_gameproject\src\bossobject.cpp
-	"stdafx.h"
+1680193359 source:d:\sdl_gameproject\src\bossobject.cpp
 	"BossObject.h"
 
-1679411291 d:\sdl_gameproject\include\bossobject.h
+1680146410 d:\sdl_gameproject\include\bossobject.h
 	"BaseObject.h"
 	"CommonFunction.h"
 	"BulletObject.h"
 
-1679411291 d:\sdl_gameproject\include\bulletobject.h
+1680970130 d:\sdl_gameproject\include\bulletobject.h
 	"BaseObject.h"
+	<math.h>
 
-1679411292 source:d:\sdl_gameproject\src\explosionobject.cpp
-	"stdafx.h"
+1680766323 source:d:\sdl_gameproject\src\explosionobject.cpp
 	"ExplosionObject.h"
 
 1679411292 d:\sdl_gameproject\include\explosionobject.h
 	"CommonFunction.h"
 	"BaseObject.h"
 
-1679653818 source:d:\sdl_gameproject\src\geometric.cpp
-	"stdafx.h"
+1680106100 source:d:\sdl_gameproject\src\geometric.cpp
 	"Geometric.h"
 
 1679653892 d:\sdl_gameproject\include\geometric.h
 	"CommonFunction.h"
 
-1679411291 source:d:\sdl_gameproject\src\imptimer.cpp
-	"stdafx.h"
+1680106100 source:d:\sdl_gameproject\src\imptimer.cpp
 	"ImpTimer.h"
 	"CommonFunction.h"
 
 1679411291 d:\sdl_gameproject\include\imptimer.h
 
-1679716594 source:d:\sdl_gameproject\src\playerpower.cpp
-	"stdafx.h"
+1680106100 source:d:\sdl_gameproject\src\playerpower.cpp
 	"PlayerPower.h"
 
 1679716327 d:\sdl_gameproject\include\playerpower.h
 	"CommonFunction.h"
 	"BaseObject.h"
 
-1679411291 source:d:\sdl_gameproject\src\textobject.cpp
-	"stdafx.h"
+1680106100 source:d:\sdl_gameproject\src\textobject.cpp
 	"TextObject.h"
 
 1679411291 d:\sdl_gameproject\include\textobject.h
 	"CommonFunction.h"
 
-1679653137 source:d:\sdl_gameproject\src\threatsobject.cpp
-	"stdafx.h"
+1680867655 source:d:\sdl_gameproject\src\threatsobject.cpp
 	"ThreatsObject.h"
 
-1679650602 d:\sdl_gameproject\include\threatsobject.h
+1680866210 d:\sdl_gameproject\include\threatsobject.h
 	"CommonFunction.h"
 	"BaseObject.h"
 	"BulletObject.h"
 
-1679411291 source:d:\sdl_gameproject\src\bulletobject.cpp
-	"stdafx.h"
+1680970305 source:d:\sdl_gameproject\src\bulletobject.cpp
 	"BulletObject.h"
 

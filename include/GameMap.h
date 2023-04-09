@@ -4,7 +4,7 @@
 #include "BaseObject.h"
 
 
-#define  SCROLL_SPEED 4
+#define SCROLL_SPEED 4
 #define MAX_TILES 20
 
 
@@ -21,7 +21,7 @@ public:
     GameMap();
     ~GameMap();
     void LoadMap(char* name);
-    void DrawMap(SDL_Renderer* des);
+    void DrawMap(SDL_Renderer* screen);
     void LoadMapTiles(SDL_Renderer* screen);
     Map GetMap() const
     {
@@ -31,6 +31,7 @@ public:
     {
         game_map_ = gMap;
     }
+    SDL_Rect GetRectFrame();
 private:
     Map game_map_;
     TileMat tile_mat_[MAX_TILES];

@@ -1,5 +1,6 @@
-#include "stdafx.h"
 #include "GameMap.h"
+
+#define  NUM_FRAME 8
 
 GameMap::GameMap()
 {
@@ -95,8 +96,8 @@ void GameMap::DrawMap(SDL_Renderer* des)
 
     for (int i = y1; i < y2; i += TILE_SIZE)
     {
-        map_x = game_map_.start_x_/TILE_SIZE;
-        for (int j= x1; j < x2; j +=TILE_SIZE)
+        map_x = game_map_.start_x_ / TILE_SIZE;
+        for (int j = x1; j < x2; j +=TILE_SIZE)
         {
             if (game_map_.tile[map_y][map_x] != 0)
             {
@@ -108,3 +109,13 @@ void GameMap::DrawMap(SDL_Renderer* des)
         map_y++;
     }
 }
+
+//SDL_Rect GameMap::GetRectFrame()
+//{
+//    SDL_Rect rect;
+//    rect.x = rect_.x;
+//    rect.y = rect_.y;
+//    rect.w = rect_.w/NUM_FRAME;
+//    rect.h = rect_.h;
+//    return rect;
+//}

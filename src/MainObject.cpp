@@ -1,8 +1,7 @@
-#include "stdafx.h"
 #include "MainObject.h"
 
-//const int PLAYER_WIDTH = 60;
-//const int PLAYER_HEIGHT = 64;
+const int PLAYER_WIDTH = 60;
+const int PLAYER_HEIGHT = 64;
 
 #define  NUM_FRAME 8
 
@@ -27,6 +26,9 @@ MainObject::MainObject()
     input_type_.up_ = 0;
     money_count_ = 0;
     status_ = WALK_NONE;
+    current_time = 0;
+    last_time = 0;
+    continuous_bullet = 0;
 }
 
 MainObject::~MainObject()
@@ -55,19 +57,26 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_C
         switch( events.key.keysym.sym )
         {
         case SDLK_RIGHT:
-        {
-            status_  = WALK_RIGHT;
-            input_type_.right_ = 1;
-            UpdateImagePlayer(screen);
-            break;
-        }
+            {
+                status_  = WALK_RIGHT;
+                input_type_.right_ = 1;
+                UpdateImagePlayer(screen);
+                break;
+            }
         case SDLK_LEFT:
-        {
-            status_ = WALK_LEFT;
-            input_type_.left_ = 1;
-            UpdateImagePlayer(screen);
-            break;
-        }
+            {
+                status_ = WALK_LEFT;
+                input_type_.left_ = 1;
+                UpdateImagePlayer(screen);
+                break;
+            }
+        case SDLK_UP:
+            {
+                status_ = WALK_JUMP;
+                input_type_.jump_ = 1;
+                UpdateImagePlayer(screen);
+                break;
+            }
         }
     }
     //If a key was released
@@ -82,46 +91,47 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_C
         case SDLK_LEFT:
             input_type_.left_ = 0;
             break;
+        case SDLK_UP:
+            input_type_.jump_ = 0;
             break;
         }
     }
-    else if (events.type == SDL_MOUSEBUTTONDOWN)
+    else if (events.type == SDL_MOUSEBUTTONDOWN) //add function shooting when hold mouse down
     {
         BulletObject* p_bullet = new BulletObject();
+
         if (events.button.button == SDL_BUTTON_LEFT)
         {
             p_bullet->LoadImg("img//player_bullet.png", screen);
             int ret = Mix_PlayChannel(-1, bullet_sound[0], 0);
             //p_bullet->set_type(BulletObject::SPHERE);
         }
+
         else if(events.button.button == SDL_BUTTON_RIGHT)
         {
-            p_bullet->LoadImg("img//player_bullet.png", screen);
-            int ret = Mix_PlayChannel(-1, bullet_sound[1], 0);
+            continuous_bullet = true;
+            SpawnBullet(screen);
         }
 
         if (status_ == WALK_LEFT)
-            {
-                p_bullet->set_dir_bullet(BulletObject::DIR_LEFT);
-                p_bullet->SetRect(this->rect_.x, this->rect_.y + height_frame_*0.22);
-            }
-            else
-            {
-                p_bullet->set_dir_bullet(BulletObject::DIR_RIGHT);
-                p_bullet->SetRect(this->rect_.x + width_frame_ - 20, this->rect_.y + height_frame_*0.22);
-            }
-
-            p_bullet->set_x_val(20);
-            p_bullet->set_y_val(20);
-            //p_bullet->set_move_type(BulletObject::SIN_TYPE);
-
-            p_bullet->set_is_move(true);
-            p_bullet_list_.push_back(p_bullet);
-        }
-        else if (events.button.button == SDL_BUTTON_RIGHT)
         {
-            input_type_.jump_ = 1;
+            p_bullet->set_bullet_dir(BulletObject::DIR_LEFT);
+            p_bullet->SetRect(this->rect_.x, this->rect_.y + height_frame_*0.22);
         }
+        else
+        {
+            p_bullet->set_bullet_dir(BulletObject::DIR_RIGHT);
+            p_bullet->SetRect(this->rect_.x + width_frame_ - 20, this->rect_.y + height_frame_*0.22);
+        }
+
+        p_bullet->set_x_val(20);
+        p_bullet->set_y_val(20);
+        //p_bullet->set_move_type(BulletObject::SIN_TYPE);
+
+        p_bullet->set_is_move(true);
+        p_bullet_list_.push_back(p_bullet);
+    }
+
     else if (events.type == SDL_MOUSEBUTTONUP)
     {
         if (events.button.button == SDL_BUTTON_LEFT)
@@ -135,10 +145,22 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_C
     }
 }
 
-
-void MainObject::HandleBullet(SDL_Renderer* des)
+void MainObject::SpawnBullet(SDL_Renderer* screen)
 {
-    for (int i = 0; i < p_bullet_list_.size(); i++)
+    current_time = SDL_GetTicks();
+    if (continuous_bullet && current_time > last_time + 200)
+    {
+        BulletObject* p_bullet = new BulletObject();
+        p_bullet->LoadImg("img//player_bullet.png", screen);
+        p_bullet_list_.push_back(p_bullet);
+
+       last_time = current_time;
+    }
+}
+
+void MainObject::HandleBullet(SDL_Renderer* des)//check bullet list
+{
+    for (int i = 0; i < (int)p_bullet_list_.size(); i++)
     {
         BulletObject* p_bullet = p_bullet_list_.at(i);
         if (p_bullet != NULL)
@@ -146,9 +168,9 @@ void MainObject::HandleBullet(SDL_Renderer* des)
             if (p_bullet->get_is_move())
             {
                 //if (bullet_dir_ == DIR_RIGHT)
-                p_bullet->HandelMove(SCREEN_WIDTH, SCREEN_HEIGHT);
+                  p_bullet->HandleMove(SCREEN_WIDTH, SCREEN_HEIGHT);
                 //else
-                //  p_bullet->HandleMoveRightToLeft();
+                  //p_bullet->HandleMoveRightToLeft();
                 p_bullet->Render(des);
             }
             else
@@ -166,7 +188,7 @@ void MainObject::HandleBullet(SDL_Renderer* des)
 
 void MainObject::RemoveBullet(const int& idx)
 {
-    if (p_bullet_list_.size() > 0 && idx < p_bullet_list_.size())
+    if ((int)p_bullet_list_.size() > 0 && idx < (int)p_bullet_list_.size())
     {
         BulletObject* p_bullet = p_bullet_list_.at(idx);
         p_bullet_list_.erase(p_bullet_list_.begin() + idx);
@@ -245,8 +267,7 @@ void MainObject::Show(SDL_Renderer* des)
 
     UpdateImagePlayer(des);
 
-    if((input_type_.left_ == 1 ||
-            input_type_.right_ == 1  ))
+    if((input_type_.left_ == 1 || input_type_.right_ == 1  ))
     {
         frame_++;
     }
@@ -277,6 +298,7 @@ void MainObject::Show(SDL_Renderer* des)
     }
 }
 
+//Player Moves
 void MainObject::DoPlayer(Map& g_map)
 {
     if (think_time_ == 0)
@@ -304,14 +326,13 @@ void MainObject::DoPlayer(Map& g_map)
         {
             if (on_ground_ == true)
             {
-                y_val_ = -PLAYER_HIGHT_VAL;
+                y_val_ = -PLAYER_HEIGHT_VAL;
             }
             on_ground_ = false;
             input_type_.jump_ = 0;
         }
 
         CheckToMap(g_map);
-
         CenterEntityOnMap(g_map);
     }
 
@@ -335,6 +356,7 @@ void MainObject::DoPlayer(Map& g_map)
     }
 }
 
+//Move the map to the player
 void MainObject::CenterEntityOnMap(Map& g_map)
 {
     g_map.start_x_ = x_pos_ - (SCREEN_WIDTH / 2);
@@ -362,6 +384,7 @@ void MainObject::CenterEntityOnMap(Map& g_map)
     }
 }
 
+
 void MainObject::CheckToMap(Map& g_map)
 {
     int x1 = 0;
@@ -371,16 +394,8 @@ void MainObject::CheckToMap(Map& g_map)
 
     //Check Horizontal
     //on_ground_ = false;
-    int height_min =    height_frame_ < TILE_SIZE ? height_frame_ : TILE_SIZE;    //SDLCommonFunc::GetMin(height_frame_ TILE_SIZE);
+    int height_min = height_frame_ < TILE_SIZE ? height_frame_ : TILE_SIZE;    //SDLCommonFunction::GetMin(height_frame_ TILE_SIZE);
 
-    /*
-             x1,y1***x2
-             *       *
-             *       *
-             *       *
-             *y2******
-
-    */
     x1 = (x_pos_ + x_val_) / TILE_SIZE;
     x2 = (x_pos_ + x_val_ + width_frame_ - 1) / TILE_SIZE;
 
@@ -537,6 +552,10 @@ void MainObject::UpdateImagePlayer(SDL_Renderer* des)
             if (input_type_.up_ == 0)
             {
                 LoadImg(g_name_main_left, des);
+                if (input_type_.jump_ == 1)
+                {
+                    LoadImg(g_name_main_jump_left, des);
+                }
             }
             /*else if (input_type_.up_ == 1)
             {
@@ -553,6 +572,10 @@ void MainObject::UpdateImagePlayer(SDL_Renderer* des)
             if (input_type_.up_ == 0)
             {
                 LoadImg(g_name_main_right, des);
+                if (input_type_.jump_ == 1)
+                {
+                    LoadImg(g_name_main_jump_right, des);
+                }
             }
             /*else if (input_type_.up_ == 1)
             {
@@ -573,7 +596,7 @@ void MainObject::UpdateImagePlayer(SDL_Renderer* des)
             {
                 if (input_type_.up_ == 0)
                 {
-                    LoadImg("img//jum_left.png", des);
+                    LoadImg(g_name_main_jump_left, des);
 
                 }
                 /*else if (input_type_.up_ == 1)
@@ -585,7 +608,7 @@ void MainObject::UpdateImagePlayer(SDL_Renderer* des)
             {
                 if (input_type_.up_ == 0)
                 {
-                    LoadImg("img//jum_left.png", des);
+                    LoadImg(g_name_main_jump_left, des);
                 }
                 /*if (input_type_.up_ == 1)
                 {
@@ -599,7 +622,7 @@ void MainObject::UpdateImagePlayer(SDL_Renderer* des)
             {
                 if (input_type_.up_ == 0)
                 {
-                    LoadImg("img//jum_right.png", des);
+                    LoadImg(g_name_main_jump_right, des);
 
                 }
                 /*else
@@ -611,7 +634,7 @@ void MainObject::UpdateImagePlayer(SDL_Renderer* des)
             {
                 if (input_type_.up_ == 0)
                 {
-                    LoadImg("img//jum_right.png", des);
+                    LoadImg(g_name_main_jump_right, des);
                 }
                 /*else if (input_type_.up_ == 1)
                 {
