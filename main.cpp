@@ -600,7 +600,7 @@ int main(int argc, char* argv[])
         if (val <= SCREEN_WIDTH)
         {
             bossObject.SetMapXY(ga_map.start_x_, ga_map.start_y_);
-            bossObject.DoPlayer(ga_map);
+            bossObject.DoBoss(ga_map);
             bossObject.MakeBullet(g_screen, SCREEN_WIDTH, SCREEN_HEIGHT);
             bossObject.Show(g_screen);
         }

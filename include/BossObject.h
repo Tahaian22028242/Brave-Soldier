@@ -64,8 +64,7 @@ public:
     };
 
     void CheckToMap(Map& g_map);
-    void CenterEntityOnMap(Map& g_map);
-    void DoPlayer(Map& g_map);
+    void DoBoss(Map& g_map);
     void InitBoss();
     std::vector<BulletObject*> get_bullet_list() const
     {

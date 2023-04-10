@@ -73,7 +73,7 @@ void BossObject::Show(SDL_Renderer* des)
     }
 }
 
-void BossObject::DoPlayer(Map& g_map)
+void BossObject::DoBoss(Map& g_map)
 {
     if (think_time_ == 0)
     {
@@ -107,7 +107,6 @@ void BossObject::DoPlayer(Map& g_map)
 
         CheckToMap(g_map);
 
-        //CenterEntityOnMap(g_map);
     }
 
     if (think_time_ > 0)
@@ -137,32 +136,6 @@ void BossObject::InitBoss()
     input_type_.left_ = 1;
 }
 
-void BossObject::CenterEntityOnMap(Map& g_map)
-{
-    g_map.start_x_ = x_pos_ - (SCREEN_WIDTH / 2);
-
-    if (g_map.start_x_ < 0)
-    {
-        g_map.start_x_ = 0;
-    }
-
-    else if (g_map.start_x_ + SCREEN_WIDTH >= g_map.max_x_)
-    {
-        g_map.start_x_= g_map.max_x_ - SCREEN_WIDTH;
-    }
-
-    g_map.start_y_ = y_pos_ - (SCREEN_HEIGHT / 2);
-
-    if (g_map.start_y_ < 0)
-    {
-        g_map.start_y_ = 0;
-    }
-
-    else if (g_map.start_y_+ SCREEN_HEIGHT >= g_map.max_y_)
-    {
-        g_map.start_y_ = g_map.max_y_ - SCREEN_HEIGHT;
-    }
-}
 
 void BossObject::CheckToMap(Map& g_map)
 {
