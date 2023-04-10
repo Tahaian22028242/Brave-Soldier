@@ -1,6 +1,5 @@
 SDL_GAMEPROJECT
  
-=======
 -> Become a hero and get to save the world!
 
 Game name: Brave Soldier (still in developments).
