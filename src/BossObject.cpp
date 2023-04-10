@@ -20,6 +20,17 @@ BossObject::~BossObject()
 
 }
 
+SDL_Rect BossObject::GetRectFrame()
+{
+    SDL_Rect rect;
+    rect.x = rect_.x;
+    rect.y = rect_.y;
+    rect.w = rect_.w/FRAME_NUM_32;
+    rect.h = rect_.h;
+
+    return rect;
+}
+
 bool BossObject::LoadImg(std::string path, SDL_Renderer* screen)
 {
     bool ret = BaseObject::LoadImg(path, screen);
@@ -273,6 +284,21 @@ void BossObject::MakeBullet(SDL_Renderer* des, const int& x_limit, const int& y_
                 p_bullet->Free();
                 bullet_list_.erase(bullet_list_.begin() + i);
             }
+        }
+    }
+}
+
+void BossObject::RemoveBullet(const int& idx)
+{
+    if (bullet_list_.size() > 0 && idx < (int)bullet_list_.size())
+    {
+        BulletObject* b_bullet = bullet_list_.at(idx);
+        bullet_list_.erase(bullet_list_.begin() + idx);
+
+        if (b_bullet)
+        {
+            delete b_bullet;
+            b_bullet = NULL;
         }
     }
 }

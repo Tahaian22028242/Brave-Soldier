@@ -320,7 +320,7 @@ int main(int argc, char* argv[])
                     }
                 }
 
-
+                //COLLISION THREAT OBJECT -> MAIN OBJECT
                 SDL_Rect rect_threat1 = obj_threat1->GetRectFrame();
                 bool is_col2 = SDLCommonFunction::CheckCollision(rect_player, rect_threat1);
                 if (is_col2 || is_col1)
@@ -397,7 +397,7 @@ int main(int argc, char* argv[])
                     }
                 }
 
-
+                //COLLISION THREAT OBJECT -> MAIN OBJECT
                 SDL_Rect rect_threat2 = obj_threat2->GetRectFrame();
                 bool is_col2 = SDLCommonFunction::CheckCollision(rect_player, rect_threat2);
                 if (is_col2 || is_col1)
@@ -464,6 +464,44 @@ int main(int argc, char* argv[])
 //                }
 //            }
 //
+
+        //COLLISION BOSS BULLET -> MAIN OBJECT
+        bool is_col_boss_bullet = false;
+        std::vector<BulletObject*> boss_bullet_list = bossObject.get_bullet_list();
+        for (int am = 0; am < (int)boss_bullet_list.size(); am++)
+        {
+            BulletObject* boss_bullet = boss_bullet_list.at(am);
+            if (boss_bullet != NULL)
+            {
+                is_col_boss_bullet = SDLCommonFunction::CheckCollision(boss_bullet->GetRect(), rect_player);
+                if (is_col_boss_bullet == true)
+                {
+                    bossObject.RemoveBullet(am);
+                    break;
+                }
+            }
+        }
+        //COLLISION BOSS OBJECT -> MAIN OBJECT
+        bool is_col_boss = SDLCommonFunction::CheckCollision(rect_player, bossObject.GetRectFrame());
+        if (is_col_boss || is_col_boss_bullet)
+        {
+            //obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
+            //walk_object.set_is_move(true);
+            int width_exp_frame = exp_main.get_frame_height();
+            int heiht_exp_height = exp_main.get_frame_width();
+            for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
+            {
+                int x_pos = (p_player.GetRect().x + p_player.get_frame_width()*0.5) - width_exp_frame*0.5;
+                int y_pos = (p_player.GetRect().y + p_player.get_frame_height()*0.5) - heiht_exp_height*0.5;
+
+                exp_main.set_frame(ex);
+                exp_main.SetRect(x_pos, y_pos);
+                exp_main.Show(g_screen);
+                //SDL_RenderPresent(g_screen);
+            }
+            num_die++;
+            Mix_PlayChannel(-1, g_sound_ex_main, 0);
+        }
 
 
         //COLLISION THREAT -> Main Bullet
@@ -550,6 +588,38 @@ int main(int argc, char* argv[])
 //                        Mix_PlayChannel(-1, g_sound_explosion, 0);
                     }
                 }
+                //COLLISION BOSS -> Main Bullet
+                bool is_col_bullet_boss = SDLCommonFunction::CheckCollision(p_bullet->GetRect(), bossObject.GetRectFrame());
+                int num_bullet_to_boss = 0;
+                if (is_col_bullet_boss)
+                {
+                    num_bullet_to_boss++;
+                    for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
+                    {
+                        //set exp pos
+                        int x_pos = p_bullet->GetRect().x - frame_exp_width*0.5;
+                        int y_pos = p_bullet->GetRect().y - frame_exp_height*0.5;
+
+                        exp_threats.set_frame(ex);
+                        exp_threats.SetRect(x_pos, y_pos);
+                        exp_threats.Show(g_screen);
+                    }
+//
+//                        obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
+                    p_player.RemoveBullet(am);
+//
+//                        //if (obj_threat->set_type_move() == ThreatsObject::MOVING_CONTINOUS)
+//                        //{
+//                        //    obj_threat->Reset();
+//                        //}
+//                        //else
+//                        //{
+                    if (num_bullet_to_boss == 10) bossObject.Free();
+//                    bossObject = NULL;
+//                        threats_list1.erase(threats_list1.begin() + i);
+//                                //}
+                    Mix_PlayChannel(-1, g_sound_explosion, 0);
+                }
              }
         }
 
@@ -618,7 +688,7 @@ int main(int argc, char* argv[])
         //Update screen
         SDL_RenderPresent(g_screen);
     }
-                std::cout << num_die;
+    //std::cout << num_die;
 
 
 
@@ -641,6 +711,7 @@ int main(int argc, char* argv[])
 
     threats_list2.clear();
 
+    bossObject.clear();
 
     close();
 

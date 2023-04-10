@@ -46,6 +46,7 @@ public:
     }
 
     void Show(SDL_Renderer* screen);
+    SDL_Rect GetRectFrame();
     bool LoadImg(std::string path, SDL_Renderer* screen);
     void set_clips();
 
@@ -77,7 +78,7 @@ public:
 
     void InitBullet(SDL_Renderer* screen);
     void MakeBullet(SDL_Renderer* des, const int& x_limit, const int& y_limit);
-
+    void RemoveBullet(const int& idx);
 private:
     int map_x_;
     int map_y_;

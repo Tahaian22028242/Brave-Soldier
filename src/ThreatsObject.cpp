@@ -462,13 +462,13 @@ void ThreatsObject::RemoveBullet(const int& idx)
 {
     if (bullet_list_.size() > 0 && idx < (int)bullet_list_.size())
     {
-        BulletObject* p_bullet = bullet_list_.at(idx);
+        BulletObject* th_bullet = bullet_list_.at(idx);
         bullet_list_.erase(bullet_list_.begin() + idx);
 
-        if (p_bullet)
+        if (th_bullet)
         {
-            delete p_bullet;
-            p_bullet = NULL;
+            delete th_bullet;
+            th_bullet = NULL;
         }
     }
 }

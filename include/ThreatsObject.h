@@ -84,7 +84,6 @@ public:
     void RemoveBullet(const int& idx);
     void ResetBullet(BulletObject* p_bullet);
     void CheckToMap(Map& g_map, SDL_Renderer* screen);
-    void CenterEntityOnMap(Map& g_map);
     void DoThreats(Map& g_map, SDL_Renderer* screen);
     void ImpMoveType(SDL_Renderer* screen);
     void InitThreats();
