@@ -1,5 +1,5 @@
-<<<<<<< HEAD
-'My readme' 
+SDL_GAMEPROJECT
+ 
 =======
 -> Become a hero and get to save the world!
 
