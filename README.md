@@ -1,6 +1,5 @@
-<<<<<<< HEAD
-'My readme' 
-=======
+SDL_GAMEPROJECT
+ 
 -> Become a hero and get to save the world!
 
 Game name: Brave Soldier (still in developments).
@@ -28,4 +27,4 @@ Credits:
 - My own research and adjustments.
 
 Contact me: through Zalo, Facebook, Gmail, Piazza etc.
->>>>>>> af1075c215a23e8dc4f13cf5d437ebcec657aa67
+
