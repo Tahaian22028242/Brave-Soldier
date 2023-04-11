@@ -4,6 +4,8 @@
 #include "BaseObject.h"
 #include <math.h>
 
+#define BULLET_OBJECT_DISTANCE 300
+
 class BulletObject : public BaseObject
 {
 public:

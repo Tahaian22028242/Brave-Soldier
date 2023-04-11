@@ -3,6 +3,8 @@
 
 BossObject::BossObject()
 {
+    rect_.x = SCREEN_WIDTH;
+    rect_.y = 0;
     frame_ = 0;
     x_val_ = 0.0;
     y_val_ = 0.0;

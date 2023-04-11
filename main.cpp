@@ -251,6 +251,7 @@ int main(int argc, char* argv[])
             if(g_event.type == SDL_QUIT)
             {
                 quit = true;
+                break;
             }
 
             p_player.HandleInputAction(g_event, g_screen, g_sound_bullet);
@@ -290,6 +291,7 @@ int main(int argc, char* argv[])
         //Show threats
 
         SDL_Rect rect_player = p_player.GetRectFrame();
+        bool is_big_threat = false;
 
         for (int i = 0; i < (int)threats_list1.size(); i++)
         {
@@ -315,6 +317,8 @@ int main(int argc, char* argv[])
                         if (is_col1 == true)
                         {
                             obj_threat1->RemoveBullet(am);
+                            is_big_threat = false;
+                            obj_threat1->ResetBullet(th_bullet1, is_big_threat);
                             break;
                         }
                     }
@@ -325,7 +329,6 @@ int main(int argc, char* argv[])
                 bool is_col2 = SDLCommonFunction::CheckCollision(rect_player, rect_threat1);
                 if (is_col2 || is_col1)
                 {
-                    //obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
                     //walk_object.set_is_move(true);
                     int width_exp_frame = exp_main.get_frame_height();
                     int heiht_exp_height = exp_main.get_frame_width();
@@ -337,7 +340,6 @@ int main(int argc, char* argv[])
                         exp_main.set_frame(ex);
                         exp_main.SetRect(x_pos, y_pos);
                         exp_main.Show(g_screen);
-                        //SDL_RenderPresent(g_screen);
                     }
                     num_die++;
                 }
@@ -392,6 +394,8 @@ int main(int argc, char* argv[])
                         if (is_col1 == true)
                         {
                             obj_threat2->RemoveBullet(am);
+                            is_big_threat = true;
+                            obj_threat2->ResetBullet(th_bullet2, is_big_threat);
                             break;
                         }
                     }
@@ -402,7 +406,6 @@ int main(int argc, char* argv[])
                 bool is_col2 = SDLCommonFunction::CheckCollision(rect_player, rect_threat2);
                 if (is_col2 || is_col1)
                 {
-                    //obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
                     //walk_object.set_is_move(true);
                     int width_exp_frame = exp_main.get_frame_height();
                     int heiht_exp_height = exp_main.get_frame_width();
@@ -536,7 +539,7 @@ int main(int argc, char* argv[])
                             exp_threats.Show(g_screen);
                         }
 //
-//                        obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
+                        //obj_threat1->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
                         p_player.RemoveBullet(am);
 //
 //                        //if (obj_threat->set_type_move() == ThreatsObject::MOVING_CONTINOUS)
@@ -614,7 +617,7 @@ int main(int argc, char* argv[])
 //                        //}
 //                        //else
 //                        //{
-                    if (num_bullet_to_boss == 10) bossObject.Free();
+                    if (num_bullet_to_boss >= 10) bossObject.Free();
 //                    bossObject = NULL;
 //                        threats_list1.erase(threats_list1.begin() + i);
 //                                //}
@@ -622,7 +625,6 @@ int main(int argc, char* argv[])
                 }
              }
         }
-
 
         //Show time for game
         std::string str_time = "Time: ";
@@ -653,6 +655,7 @@ int main(int argc, char* argv[])
         std::string strMark("KILL: ");
         strMark += val_str_mark;
 
+
         mark_game.SetText(strMark);
         mark_game.loadFromRenderedText(g_font_text, g_screen);
         mark_game.RenderText(g_screen, SCREEN_WIDTH*0.5 - 50, 15);
@@ -676,7 +679,6 @@ int main(int argc, char* argv[])
         }
 
 
-
         //Set fps time, adjust smoothness.
         int real_imp_time = fps.get_ticks();//base on the CPU of the laptop
         int time_for_one_frame = 1000/FRAMES_PER_SECOND;
@@ -688,9 +690,6 @@ int main(int argc, char* argv[])
         //Update screen
         SDL_RenderPresent(g_screen);
     }
-    //std::cout << num_die;
-
-
 
 
     for (int i = 0; i < (int)threats_list1.size(); i++)
@@ -710,8 +709,6 @@ int main(int argc, char* argv[])
     }
 
     threats_list2.clear();
-
-    bossObject.clear();
 
     close();
 

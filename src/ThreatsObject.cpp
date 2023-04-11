@@ -30,7 +30,7 @@ ThreatsObject::~ThreatsObject()
             BulletObject* p_bullet = bullet_list_.at(i);
             if (p_bullet != NULL)
             {
-                delete p_bullet;
+                //delete p_bullet;
                 p_bullet = NULL;
             }
         }
@@ -249,12 +249,12 @@ void ThreatsObject::CheckToMap(Map& g_map, SDL_Renderer* screen)
             {
                // Fixed post of object at current post of map.
                // => Cannot moving when press button
-               x_pos_ = x2 * TILE_SIZE;
-               x_pos_ -= width_frame_ + 1;
-               x_val_ -= THREAT_SPEED;
-               input_type_.left_ = 1;
-               input_type_.right_ = 0;
-               LoadImg("img//threat_left.png", screen);
+                x_pos_ = x2 * TILE_SIZE;
+                x_pos_ -= width_frame_ + 1;
+                x_val_ -= THREAT_SPEED;
+                input_type_.left_ = 1;
+                input_type_.right_ = 0;
+                LoadImg("img//threat_left.png", screen);
             }
         }
 
@@ -356,7 +356,6 @@ void ThreatsObject::InitBulletForBigThreats(BulletObject* p_bullet,  SDL_Rendere
         bool ret = p_bullet->LoadImg("img//bullet_threat.png", screen);
         if (ret)
         {
-            //p_bullet->LoadImgBullet(screen);
             p_bullet->set_is_move(true);
             p_bullet->set_bullet_dir(BulletObject::DIR_LEFT);
             //p_bullet->set_bullet_type(BulletObject::SPHERE);
@@ -374,7 +373,6 @@ void ThreatsObject::InitBulletForSmallThreats(BulletObject* p_bullet,  SDL_Rende
         bool ret = p_bullet->LoadImg("img//player_bullet1.png", screen);
         if (ret)
         {
-            //p_bullet->LoadImgBullet(screen);
             p_bullet->set_is_move(true);
             p_bullet->set_bullet_dir(BulletObject::DIR_LEFT);
             //p_bullet->set_bullet_type(BulletObject::SPHERE);
@@ -400,7 +398,7 @@ void ThreatsObject::MakeBulletForBigThreats(SDL_Renderer* screen, const int& x_l
                     if (p_bullet->get_is_move())
                     {
                         int bullet_distance = rect_.x + width_frame_ - p_bullet->GetRect().x;
-                        if ( bullet_distance > 0 && bullet_distance < 400)
+                        if ( bullet_distance > 0 && bullet_distance < BULLET_OBJECT_DISTANCE)
                         {
                             p_bullet->HandleMove(x_limit, y_limit);
                             p_bullet->Render(screen);
@@ -436,7 +434,7 @@ void ThreatsObject::MakeBulletForSmallThreats(SDL_Renderer* screen, const int& x
                     if (p_bullet->get_is_move())
                     {
                         int bullet_distance = rect_.x + width_frame_ - p_bullet->GetRect().x;
-                        if ( bullet_distance > 0 && bullet_distance < 400)
+                        if ( bullet_distance > 0 && bullet_distance < BULLET_OBJECT_DISTANCE)
                         {
                             p_bullet->HandleMove(x_limit, y_limit);
                             p_bullet->Render(screen);
@@ -467,16 +465,24 @@ void ThreatsObject::RemoveBullet(const int& idx)
 
         if (th_bullet)
         {
-            delete th_bullet;
+            //delete th_bullet;
             th_bullet = NULL;
         }
     }
 }
 
-void ThreatsObject::ResetBullet(BulletObject* p_bullet)
+void ThreatsObject::ResetBullet(BulletObject* p_bullet, bool is_big_threat)
 {
-    p_bullet->SetRect(x_pos_ + 20, y_pos_ + 10);
-    p_bullet->set_x_val(15);
+    if (is_big_threat)
+    {
+        p_bullet->SetRect(rect_.x + 5, rect_.y + 10);
+        p_bullet->set_x_val(15);
+    }
+    else
+    {
+        p_bullet->SetRect(rect_.x, rect_.y + 20);
+        p_bullet->set_x_val(15);
+    }
 }
 
 void ThreatsObject::Reset(const int x_border, const int y_border)
@@ -489,7 +495,7 @@ void ThreatsObject::Reset(const int x_border, const int y_border)
         BulletObject* p_bullet = bullet_list_.at(i);
         if (p_bullet != NULL)
         {
-            ResetBullet(p_bullet);
+            ResetBullet(p_bullet, is_big_threat);
         }
     }
 }

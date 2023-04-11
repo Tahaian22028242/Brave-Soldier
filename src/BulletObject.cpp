@@ -134,7 +134,7 @@ void BulletObject::HandleMoveRightToLeft(const int& origin_x)
     }
 
     int distance_bullet = origin_x - rect_.x;
-    if (distance_bullet > 400)
+    if (distance_bullet > BULLET_OBJECT_DISTANCE)
     {
         is_move_ = false;
     }

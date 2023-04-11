@@ -82,7 +82,7 @@ public:
         map_x_ = map_x, map_y_ = map_y;
     }
     void RemoveBullet(const int& idx);
-    void ResetBullet(BulletObject* p_bullet);
+    void ResetBullet(BulletObject* p_bullet, bool is_big_threat);
     void CheckToMap(Map& g_map, SDL_Renderer* screen);
     void DoThreats(Map& g_map, SDL_Renderer* screen);
     void ImpMoveType(SDL_Renderer* screen);
@@ -135,6 +135,7 @@ private:
     int animation_b_;
     int type_move_;
     std::vector<BulletObject*> bullet_list_;
+    bool is_big_threat;
 };
 
 #endif //THREATS_OBJECT_H_
