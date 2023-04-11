@@ -5,6 +5,7 @@
 #include <math.h>
 
 #define BULLET_OBJECT_DISTANCE 300
+#define BULLET_SPEED 10
 
 class BulletObject : public BaseObject
 {

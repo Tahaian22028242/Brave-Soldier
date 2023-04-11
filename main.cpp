@@ -118,7 +118,7 @@ std::vector<ThreatsObject*> MakeThreatList1()
             threat_obj->LoadImg("img//threat_left.png", g_screen);
             threat_obj->set_clips();
             threat_obj->InitThreats();
-            threat_obj->set_xpos(500 + i*500);
+            threat_obj->set_xpos(500 + i*THREAT_FREQUENCY_1);
             threat_obj->set_ypos(200);
             threat_obj->set_type_move(ThreatsObject::MOVE_IN_SPACE_TH);
 
@@ -152,7 +152,7 @@ std::vector<ThreatsObject*> MakeThreatList2()
             threat_obj2->set_clips();
             threat_obj2->InitThreats();
             threat_obj2->set_input_left(0);
-            threat_obj2->set_xpos(700 + i*1200);
+            threat_obj2->set_xpos(700 + i*THREAT_FREQUENCY_2);
             threat_obj2->set_ypos(250);
 
             threat_obj2->set_type_move(ThreatsObject::STATIC_TH);

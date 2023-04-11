@@ -19,6 +19,9 @@
 
 #define NUM_FRAME 8
 
+#define THREAT_FREQUENCY_1 500
+#define THREAT_FREQUENCY_2 1200
+
 class ThreatsObject : public BaseObject
 {
 public:
