@@ -1,11 +1,11 @@
 #include "ExplosionObject.h"
 
-ExplosionObject::ExplosionObject(void)
+ExplosionObject::ExplosionObject()
 {
 }
 
 
-ExplosionObject::~ExplosionObject(void)
+ExplosionObject::~ExplosionObject()
 {
 }
 

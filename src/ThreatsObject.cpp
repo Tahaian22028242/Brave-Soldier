@@ -464,7 +464,6 @@ void ThreatsObject::RemoveBullet(const int& idx)
 
         if (th_bullet)
         {
-            //delete th_bullet;
             th_bullet = NULL;
         }
     }
@@ -484,7 +483,7 @@ void ThreatsObject::ResetBullet(BulletObject* p_bullet, bool is_big_threat)
     }
 }
 
-void ThreatsObject::Reset(const int x_border, const int y_border)
+void ThreatsObject::Reset(const int x_border, const int y_border, bool is_big_threat)
 {
     is_stop_bullet_ = false;
     x_pos_ = SCREEN_WIDTH - 100;

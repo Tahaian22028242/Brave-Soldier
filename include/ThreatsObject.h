@@ -69,7 +69,7 @@ public:
     void MakeBulletForBigThreats(SDL_Renderer* des, const int& x_limit, const int& y_limit);
     void MakeBulletForSmallThreats(SDL_Renderer* des, const int& x_limit, const int& y_limit);
 
-    void Reset(const int x_border, const int y_border);
+    void Reset(const int x_border, const int y_border, bool is_big_threat);
 
     std::vector<BulletObject*> get_bullet_list() const
     {

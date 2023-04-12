@@ -8,8 +8,8 @@
 class ExplosionObject : public BaseObject
 {
 public:
-    ExplosionObject(void);
-    ~ExplosionObject(void);
+    ExplosionObject();
+    ~ExplosionObject();
 
 public:
     void set_clips();

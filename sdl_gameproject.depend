@@ -187,10 +187,10 @@
 1680796866 source:c:\sdl_gameproject\src\commonfunction.cpp
 	"CommonFunction.h"
 
-1680766323 source:c:\sdl_gameproject\src\explosionobject.cpp
+1681272961 source:c:\sdl_gameproject\src\explosionobject.cpp
 	"ExplosionObject.h"
 
-1679411292 c:\sdl_gameproject\include\explosionobject.h
+1681272961 c:\sdl_gameproject\include\explosionobject.h
 	"CommonFunction.h"
 	"BaseObject.h"
 
@@ -247,15 +247,15 @@
 1679411291 c:\sdl_gameproject\include\textobject.h
 	"CommonFunction.h"
 
-1681232293 source:c:\sdl_gameproject\src\threatsobject.cpp
+1681284989 source:c:\sdl_gameproject\src\threatsobject.cpp
 	"ThreatsObject.h"
 
-1681232706 c:\sdl_gameproject\include\threatsobject.h
+1681276082 c:\sdl_gameproject\include\threatsobject.h
 	"CommonFunction.h"
 	"BaseObject.h"
 	"BulletObject.h"
 
-1681227441 source:c:\sdl_gameproject\main.cpp
+1681284246 source:c:\sdl_gameproject\main.cpp
 	"CommonFunction.h"
 	"BaseObject.h"
 	"GameMap.h"
@@ -267,5 +267,4 @@
 	"PlayerPower.h"
 	"Geometric.h"
 	"BossObject.h"
-	<iostream>
 
