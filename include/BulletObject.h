@@ -2,7 +2,6 @@
 #define BULLET_OBJECT_H_
 
 #include "BaseObject.h"
-#include <math.h>
 
 #define BULLET_OBJECT_DISTANCE 300
 #define BULLET_SPEED 10
@@ -23,6 +22,7 @@ public:
         DIR_UP_RIGHT = 24,
         DIR_DOWN_LEFT = 25,
         DIR_DOWN_RIGHT = 26,
+        DIR_DOWN = 27,
     };
 
     enum BulletType
@@ -32,14 +32,7 @@ public:
         SPHERE
     };
 
-    enum MoveType
-    {
-        LINE_TYPE = 10,
-        SIN_TYPE = 11
-    };
-
-    void HandleInputAction(SDL_Event events);
-    void HandleMove(const int& x_border, const int& y_border, bool is_player = true);
+    void HandleMove(const int& x_border, const int& y_border);
 
     void set_x_val(const int& x_val)
     {
@@ -66,43 +59,21 @@ public:
     {
         return is_move_;
     }
-    void set_bullet_dir(const int& dir_type)
+    void set_bullet_dir(const unsigned int& dir_type)
     {
         bullet_dir_ = dir_type;
     }
-    void HandleMoveRightToLeft(const int& origin_x);
-    void set_move_type(const int& moveType)
+    unsigned int get_bullet_dir() const
     {
-        move_type_ = moveType;
+        return bullet_dir_;
     }
-    BulletObject* Clone();
 //    bool CheckToMap(Map& g_map, SDL_Renderer* screen);
 
 private:
-    //int x_val_;
-    //int y_val_;
+    int x_val_;
+    int y_val_;
     bool is_move_;
-    int bullet_dir_;
-    int move_type_;
-    int map_x_;
-    int map_y_;
-    float x_val_;
-    float y_val_;
-    bool is_alive_;
-    bool is_stop_bullet_;
-    float x_pos_;
-    float y_pos_;
-    int on_ground_;
-    int think_time_;
-    Input input_type_;
-//    SDL_Rect frame_clip_[NUM_FRAME];
-    int width_frame_;
-    int height_frame_;
-    int frame_;
-    int animation_a_;
-    int animation_b_;
-    int type_move_;
-//    std::vector<BulletObject*> bullet_list_
+    unsigned int bullet_dir_;
 };
 
 #endif

@@ -13,10 +13,10 @@ TextObject::~TextObject(void)
 }
 
 
-bool TextObject::loadFromRenderedText(TTF_Font* gFont, SDL_Renderer* screen)
+bool TextObject::loadFromRenderedText(TTF_Font* font, SDL_Renderer* screen)
 {
     //Render text surface
-    SDL_Surface* textSurface = TTF_RenderText_Solid(gFont, str_val_.c_str(), text_color_);
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, str_val_.c_str(), text_color_);
     if( textSurface != NULL )
     {
         //Create texture from surface pixels
@@ -34,15 +34,6 @@ bool TextObject::loadFromRenderedText(TTF_Font* gFont, SDL_Renderer* screen)
 
     //Return success
     return texture_ != NULL;
-}
-
-void TextObject::Free()
-{
-    if(texture_ != NULL)
-    {
-        SDL_DestroyTexture(texture_);
-        texture_ = NULL;
-    }
 }
 
 void TextObject::setColor(Uint8 red, Uint8 green, Uint8 blue)
@@ -84,4 +75,13 @@ void TextObject::RenderText(SDL_Renderer* screen, int x, int y, SDL_Rect* clip /
 
     //Render to screen
     SDL_RenderCopyEx(screen, texture_, clip, &renderQuad, angle, center, flip );
+}
+
+void TextObject::Free()
+{
+    if(texture_ != NULL)
+    {
+        SDL_DestroyTexture(texture_);
+        texture_ = NULL;
+    }
 }

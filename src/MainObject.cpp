@@ -12,10 +12,10 @@ MainObject::MainObject()
     y_pos_ = 0;
     x_val_ = 0;
     y_val_ = 0;
-    think_time_ = 0;
+    comeback_time_ = 0;
     width_frame_ = 0;
     height_frame_ = 0;
-    status_ = -1;
+    status_ = WALK_NONE;
     map_x_ = 0;
     map_y_ = 0;
     on_ground_ = false;
@@ -26,28 +26,88 @@ MainObject::MainObject()
     input_type_.up_ = 0;
     money_count_ = 0;
     status_ = WALK_NONE;
-    current_time = 0;
-    last_time = 0;
-    continuous_bullet = 0;
+//    current_time = 0;
+//    last_time = 0;
+//    continuous_bullet = 0;
 }
 
 MainObject::~MainObject()
 {
-    Free();
+
 }
 
+bool MainObject::LoadImg(std::string path, SDL_Renderer* screen)
+{
+    bool ret = BaseObject::LoadImg(path, screen);
+
+    if (ret == true)
+    {
+        width_frame_ = rect_.w/NUM_FRAME;
+        height_frame_ = rect_.h;
+    }
+
+    return ret;
+}
 
 SDL_Rect MainObject::GetRectFrame()
 {
     SDL_Rect rect;
     rect.x = rect_.x;
     rect.y = rect_.y;
-    rect.w = rect_.w/NUM_FRAME;
-    rect.h = rect_.h;
+    rect.w = width_frame_;
+    rect.h = height_frame_;
+
     return rect;
 }
 
-void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_Chunk* bullet_sound[3])
+void MainObject::set_clips()
+{
+    //Clip the sprites
+    if (width_frame_ > 0 && height_frame_ > 0)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            frame_clip_[i].x = i*width_frame_;
+            frame_clip_[i].y = 0;
+            frame_clip_[i].w = width_frame_;
+            frame_clip_[i].h = height_frame_;
+        }
+    }
+}
+
+void MainObject::Show(SDL_Renderer* des)
+{
+
+    UpdateImagePlayer(des);
+
+    if ((input_type_.left_ == 1 || input_type_.right_ == 1))
+    {
+        frame_++;
+    }
+    else
+    {
+        frame_ = 0;
+    }
+
+    if( frame_ >= 8 )
+    {
+        frame_ = 0;
+    }
+
+    if (comeback_time_ == 0)
+    {
+        rect_.x = x_pos_ - map_x_;
+        rect_.y = y_pos_- map_y_;
+
+        SDL_Rect* currentClip = &frame_clip_[frame_];
+
+        SDL_Rect renderQuad = {rect_.x, rect_.y, width_frame_, height_frame_};
+
+        SDL_RenderCopy(des, p_object_, currentClip, &renderQuad );
+    }
+}
+
+void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_Chunk* bullet_sound)
 {
 
     //If a key was pressed
@@ -60,6 +120,7 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_C
             {
                 status_  = WALK_RIGHT;
                 input_type_.right_ = 1;
+                input_type_.left_ = 0;
                 UpdateImagePlayer(screen);
                 break;
             }
@@ -67,6 +128,7 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_C
             {
                 status_ = WALK_LEFT;
                 input_type_.left_ = 1;
+                input_type_.right_ = 0;
                 UpdateImagePlayer(screen);
                 break;
             }
@@ -102,15 +164,15 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_C
 
         if (events.button.button == SDL_BUTTON_LEFT)
         {
-            p_bullet->LoadImg("img//player_bullet.png", screen);
-            int ret = Mix_PlayChannel(-1, bullet_sound[0], 0);
+            p_bullet->LoadImg(g_name_main_bullet, screen);
+            Mix_PlayChannel(-1, bullet_sound, 0);
             //p_bullet->set_type(BulletObject::SPHERE);
         }
 
         else if(events.button.button == SDL_BUTTON_RIGHT)
         {
-            continuous_bullet = true;
-            SpawnBullet(screen);
+//            continuous_bullet = true;
+//            SpawnBullet(screen);
         }
 
         if (status_ == WALK_LEFT)
@@ -126,8 +188,6 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_C
 
         p_bullet->set_x_val(20);
         p_bullet->set_y_val(20);
-        //p_bullet->set_move_type(BulletObject::SIN_TYPE);
-
         p_bullet->set_is_move(true);
         p_bullet_list_.push_back(p_bullet);
     }
@@ -145,18 +205,18 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_C
     }
 }
 
-void MainObject::SpawnBullet(SDL_Renderer* screen)
-{
-    current_time = SDL_GetTicks();
-    if (continuous_bullet && current_time > last_time + 200)
-    {
-        BulletObject* p_bullet = new BulletObject();
-        p_bullet->LoadImg("img//player_bullet.png", screen);
-        p_bullet_list_.push_back(p_bullet);
-
-       last_time = current_time;
-    }
-}
+//void MainObject::SpawnBullet(SDL_Renderer* screen)
+//{
+//    current_time = SDL_GetTicks();
+//    if (continuous_bullet && current_time > last_time + 200)
+//    {
+//        BulletObject* p_bullet = new BulletObject();
+//        p_bullet->LoadImg(g_name_main_bullet, screen);
+//        p_bullet_list_.push_back(p_bullet);
+//
+//       last_time = current_time;
+//    }
+//}
 
 void MainObject::HandleBullet(SDL_Renderer* des)//check bullet list
 {
@@ -167,18 +227,14 @@ void MainObject::HandleBullet(SDL_Renderer* des)//check bullet list
         {
             if (p_bullet->get_is_move())
             {
-                //if (bullet_dir_ == DIR_RIGHT)
-                  p_bullet->HandleMove(SCREEN_WIDTH, SCREEN_HEIGHT);
-                //else
-                  //p_bullet->HandleMoveRightToLeft();
+                p_bullet->HandleMove(SCREEN_WIDTH, SCREEN_HEIGHT);
                 p_bullet->Render(des);
             }
             else
             {
+                p_bullet_list_.erase(p_bullet_list_.begin() + i);
                 if (p_bullet != NULL)
                 {
-                    p_bullet_list_.erase(p_bullet_list_.begin() + i);
-                    delete p_bullet;
                     p_bullet = NULL;
                 }
             }
@@ -195,113 +251,15 @@ void MainObject::RemoveBullet(const int& idx)
 
         if (p_bullet)
         {
-            delete p_bullet;
             p_bullet = NULL;
         }
-    }
-}
-
-bool MainObject::LoadImg(std::string path, SDL_Renderer* screen)
-{
-    bool ret = BaseObject::LoadImg(path, screen);
-
-    if (ret == true)
-    {
-        width_frame_ = rect_.w/NUM_FRAME;
-        height_frame_ = rect_.h;
-    }
-
-    return ret;
-}
-
-void MainObject::set_clips()
-{
-    //Clip the sprites
-    if (width_frame_ > 0 && height_frame_ > 0)
-    {
-        frame_clip_[ 0 ].x = 0;
-        frame_clip_[ 0 ].y = 0;
-        frame_clip_[ 0 ].w = width_frame_;
-        frame_clip_[ 0 ].h = height_frame_;
-
-        frame_clip_[ 1 ].x = width_frame_;
-        frame_clip_[ 1 ].y = 0;
-        frame_clip_[ 1 ].w = width_frame_;
-        frame_clip_[ 1 ].h = height_frame_;
-
-        frame_clip_[ 2 ].x = width_frame_ * 2;
-        frame_clip_[ 2 ].y = 0;
-        frame_clip_[ 2 ].w = width_frame_;
-        frame_clip_[ 2 ].h = height_frame_;
-
-        frame_clip_[ 3 ].x = width_frame_ * 3;
-
-        frame_clip_[ 3 ].y = 0;
-        frame_clip_[ 3 ].w = width_frame_;
-        frame_clip_[ 3 ].h = height_frame_;
-
-        frame_clip_[ 4 ].x = width_frame_ * 4;
-        frame_clip_[ 4 ].y = 0;
-        frame_clip_[ 4 ].w = width_frame_;
-        frame_clip_[ 4 ].h = height_frame_;
-
-        frame_clip_[ 5 ].x = width_frame_ * 5;
-        frame_clip_[ 5 ].y = 0;
-        frame_clip_[ 5 ].w = width_frame_;
-        frame_clip_[ 5 ].h = height_frame_;
-
-        frame_clip_[ 6 ].x = width_frame_ * 6;
-        frame_clip_[ 6 ].y = 0;
-        frame_clip_[ 6 ].w = width_frame_;
-        frame_clip_[ 6 ].h = height_frame_;
-
-        frame_clip_[ 7 ].x = width_frame_ * 7;
-        frame_clip_[ 7 ].y = 0;
-        frame_clip_[ 7 ].w = width_frame_;
-        frame_clip_[ 7 ].h = height_frame_;
-    }
-}
-
-void MainObject::Show(SDL_Renderer* des)
-{
-
-    UpdateImagePlayer(des);
-
-    if((input_type_.left_ == 1 || input_type_.right_ == 1  ))
-    {
-        frame_++;
-    }
-    else
-    {
-        frame_ = 0;
-    }
-
-    if( frame_ >= 8 )
-    {
-        frame_ = 0;
-    }
-
-    if (think_time_ == 0)
-    {
-        rect_.x = x_pos_ - map_x_;
-        rect_.y = y_pos_- map_y_;
-
-        SDL_Rect* currentClip = &frame_clip_[frame_];
-        SDL_Rect renderQuad = {rect_.x, rect_.y, width_frame_, height_frame_};
-        if (currentClip != NULL)
-        {
-            renderQuad.w = currentClip->w;
-            renderQuad.h = currentClip->h;
-        }
-
-        SDL_RenderCopy(des, p_object_, currentClip, &renderQuad );
     }
 }
 
 //Player Moves
 void MainObject::DoPlayer(Map& g_map)
 {
-    if (think_time_ == 0)
+    if (comeback_time_ == 0)
     {
         x_val_ = 0;
 
@@ -336,18 +294,21 @@ void MainObject::DoPlayer(Map& g_map)
         CenterEntityOnMap(g_map);
     }
 
-    if (think_time_ > 0)
+    if (comeback_time_ > 0)
     {
-        think_time_--;
+        comeback_time_--;
 
-        if (think_time_ == 0)
+        if (comeback_time_ == 0)
         {
             if (x_pos_ > 256)
             {
                 x_pos_ -= 256;
             }
             else
+            {
                 x_pos_ = 0;
+            }
+
             y_pos_ = 0;
             x_val_ = 0;
             y_val_ = 0;
@@ -479,8 +440,7 @@ void MainObject::CheckToMap(Map& g_map)
                 if ((val1 != BLANK_TILE) || (val2 != BLANK_TILE))
                 {
                     y_pos_ = y2 * TILE_SIZE;
-                    y_pos_ -= height_frame_;
-
+                    y_pos_ -= (height_frame_+1);
                     y_val_ = 0;
 
                     on_ground_ = true;
@@ -508,7 +468,6 @@ void MainObject::CheckToMap(Map& g_map)
                 if ((val1 != BLANK_TILE) || (val2 != BLANK_TILE))
                 {
                     y_pos_ = (y1 + 1) * TILE_SIZE;
-
                     y_val_ = 0;
                 }
             }
@@ -530,17 +489,17 @@ void MainObject::CheckToMap(Map& g_map)
 
     if (y_pos_ > g_map.max_y_)
     {
-        think_time_ = 60;
-        //number_of_think_time_++;
+        comeback_time_ = 60;
+        //number_of_comeback_time_++;
     }
 }
 
 void MainObject::IncreaseMoney()
 {
     money_count_++;
-    //Mix_Chunk* beep_sound = Mix_LoadWAV(kSoundBeep);
-    //if (beep_sound != NULL)
-    //    Mix_PlayChannel(-1, beep_sound, 0 );
+    Mix_Chunk* beep_sound = Mix_LoadWAV(kSoundBeep);
+    if (beep_sound != NULL)
+        Mix_PlayChannel(-1, beep_sound, 0);
 }
 
 void MainObject::UpdateImagePlayer(SDL_Renderer* des)
@@ -549,100 +508,22 @@ void MainObject::UpdateImagePlayer(SDL_Renderer* des)
     {
         if (status_ == WALK_LEFT )
         {
-            if (input_type_.up_ == 0)
-            {
-                LoadImg(g_name_main_left, des);
-                if (input_type_.jump_ == 1)
-                {
-                    LoadImg(g_name_main_jump_left, des);
-                }
-            }
-            /*else if (input_type_.up_ == 1)
-            {
-                LoadImg("img//player_up_left.png", des);
-            }*/
-
-            /*if (input_type_.left_ == 1 && input_type_.up_ == 1)
-            {
-                LoadImg("img//player_cheo_left.png", des);
-            }*/
+            LoadImg(g_name_main_left, des);
         }
         else
         {
-            if (input_type_.up_ == 0)
-            {
-                LoadImg(g_name_main_right, des);
-                if (input_type_.jump_ == 1)
-                {
-                    LoadImg(g_name_main_jump_right, des);
-                }
-            }
-            /*else if (input_type_.up_ == 1)
-            {
-                LoadImg("img//player_up_right.png", des);
-            }*/
-
-            /*if (input_type_.right_ == 1 && input_type_.up_ == 1)
-            {
-                LoadImg("img//player_cheo_right.png", des);
-            }*/
+            LoadImg(g_name_main_right, des);
         }
     }
     else // Jump always is  1
     {
         if (status_ == WALK_LEFT)
         {
-            if (input_type_.left_ == 1)
-            {
-                if (input_type_.up_ == 0)
-                {
-                    LoadImg(g_name_main_jump_left, des);
-
-                }
-                /*else if (input_type_.up_ == 1)
-                {
-                    LoadImg("img//player_cheo_left.png", des);
-                }*/
-            }
-            else
-            {
-                if (input_type_.up_ == 0)
-                {
-                    LoadImg(g_name_main_jump_left, des);
-                }
-                /*if (input_type_.up_ == 1)
-                {
-                    LoadImg("img//player_up_left.png", des);
-                }*/
-            }
+            LoadImg(g_name_main_jump_left, des);
         }
         else
         {
-            if (input_type_.right_ == 1)
-            {
-                if (input_type_.up_ == 0)
-                {
-                    LoadImg(g_name_main_jump_right, des);
-
-                }
-                /*else
-                {
-                    LoadImg("img//player_cheo_right.png", des);
-                }*/
-            }
-            else
-            {
-                if (input_type_.up_ == 0)
-                {
-                    LoadImg(g_name_main_jump_right, des);
-                }
-                /*else if (input_type_.up_ == 1)
-                {
-                    LoadImg("img//player_up_right.png", des);
-                }*/
-            }
+            LoadImg(g_name_main_jump_right, des);
         }
     }
-
-    set_clips();
 }

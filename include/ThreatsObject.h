@@ -5,22 +5,20 @@
 #include "BaseObject.h"
 #include "BulletObject.h"
 
-#define NUM_THREAT_1 40
-#define NUM_THREAT_2 20
+#define NUM_DYNAMIC_THREAT 40
+#define NUM_STATIC_THREAT 20
 
 #define WIDTH_THREAT 44
 #define HEIGHT_THREAT 50
 
 #define THREAT_GRAVITY_SPEED 0.8
 #define MAX_FALL_SPEED 10
-
 #define THREAT_SPEED 2
-#define THREAT_HIGHT_VAL 18
 
 #define NUM_FRAME 8
 
-#define THREAT_FREQUENCY_1 500
-#define THREAT_FREQUENCY_2 1200
+#define DYNAMIC_THREAT_FREQUENCY 500
+#define STATIC_THREAT_FREQUENCY 1200
 
 class ThreatsObject : public BaseObject
 {

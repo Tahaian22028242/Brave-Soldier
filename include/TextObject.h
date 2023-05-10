@@ -1,8 +1,9 @@
 #ifndef TEXT_OBJECT_H_
 #define TEXT_OBJECT_H_
 #include "CommonFunction.h"
+#include "BaseObject.h"
 
-class TextObject
+class TextObject : public BaseObject
 {
 public:
     TextObject(void);
@@ -15,7 +16,6 @@ public:
         BLACK_TEXT = 2,
     };
 
-    bool LoadFromFile(std::string path);
     bool loadFromRenderedText(TTF_Font* gFont, SDL_Renderer* screen);
     void Free();
 
@@ -47,7 +47,6 @@ private:
     SDL_Texture* texture_;
     int width_;
     int height_;
-
 };
 
 #endif

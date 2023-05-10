@@ -1,5 +1,6 @@
 #include "CommonFunction.h"
-
+//#include "TextObject.h"
+//#include "BaseObject.h"
 
 bool SDLCommonFunction::CheckCollision(const SDL_Rect& object1, const SDL_Rect& object2)
 {
@@ -19,3 +20,24 @@ bool SDLCommonFunction::CheckCollision(const SDL_Rect& object1, const SDL_Rect& 
     }
     return false;
 }
+
+bool SDLCommonFunction::CheckFocusWithRect(const int& x, const int& y, const SDL_Rect& rect)
+{
+  if (x >= rect.x && x <= rect.x + rect.w &&
+      y >= rect.y && y <= rect.y + rect.h)
+  {
+    return true;
+  }
+  return false;
+}
+
+int SDLCommonFunction::MakeRandValue(const int& div_val /*400*/)
+{
+    int rand_y = rand()%div_val;
+    if (rand_y > SCREEN_HEIGHT - 200)
+    {
+        rand_y = SCREEN_HEIGHT*0.3;
+    }
+    return rand_y;
+}
+

@@ -17,7 +17,7 @@ public:
     void AddPos(const int& xPos);
     void Show(SDL_Renderer* screen);
     void Init(SDL_Renderer* screen);
-    void InCrease();
+    void Increase();
     void Decrease();
 private:
     int number_;
@@ -38,7 +38,7 @@ public:
     {
         x_pos_ = x;
         y_pos_ = y;
-    };
+    }
 private:
     int x_pos_;
     int y_pos_;

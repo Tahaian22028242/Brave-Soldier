@@ -76,12 +76,6 @@ void BossObject::Show(SDL_Renderer* des)
 
         SDL_Rect* currentClip = &frame_clip_[frame_];
         SDL_Rect renderQuad = {rect_.x, rect_.y, width_frame_, height_frame_};
-        if (currentClip != NULL)
-        {
-            renderQuad.w = currentClip->w;
-            renderQuad.h = currentClip->h;
-        }
-
         SDL_RenderCopy(des, p_object_, currentClip, &renderQuad );
     }
 }
@@ -105,7 +99,7 @@ void BossObject::DoBoss(Map& g_map)
 
         else if (input_type_.right_ == 1)
         {
-            x_val_+= BOSS_SPEED;
+            x_val_ += BOSS_SPEED;
         }
 
         if (input_type_.jump_ == 1)
@@ -252,7 +246,7 @@ void BossObject::CheckToMap(Map& g_map)
 void BossObject::InitBullet(SDL_Renderer* screen)
 {
     BulletObject* p_bullet = new BulletObject();
-    bool ret = p_bullet->LoadImg("img//boss bullet.png", screen);
+    bool ret = p_bullet->LoadImg(g_name_boss_bullet, screen);
     if (ret)
     {
         p_bullet->set_bullet_dir(BulletObject::DIR_LEFT);
@@ -271,7 +265,7 @@ void BossObject::MakeBullet(SDL_Renderer* des, const int& x_limit, const int& y_
         InitBullet(des);
     }
 
-    for (int i = 0; i < bullet_list_.size(); i++)
+    for (int i = 0; i < (int)bullet_list_.size(); i++)
     {
         BulletObject* p_bullet = bullet_list_.at(i);
         if (p_bullet != NULL)
@@ -299,7 +293,6 @@ void BossObject::RemoveBullet(const int& idx)
 
         if (b_bullet)
         {
-            delete b_bullet;
             b_bullet = NULL;
         }
     }

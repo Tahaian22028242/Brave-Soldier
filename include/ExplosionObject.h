@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EXP_H_
+#define EXP_H_
 
 #include "CommonFunction.h"
 #include "BaseObject.h"
@@ -7,6 +8,7 @@
 
 class ExplosionObject : public BaseObject
 {
+
 public:
     ExplosionObject();
     ~ExplosionObject();
@@ -34,3 +36,4 @@ private:
     SDL_Rect frame_clip_[8];
 };
 
+#endif

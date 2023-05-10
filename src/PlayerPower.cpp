@@ -16,16 +16,6 @@ void PlayerPower::AddPos(const int& xPos)
     position_list_.push_back(xPos);
 }
 
-void PlayerPower::Show(SDL_Renderer* screen)
-{
-    for (int i = 0; i < position_list_.size(); i++)
-    {
-        rect_.x = position_list_.at(i);
-        rect_.y = 0;
-        Render(screen);
-    }
-}
-
 void PlayerPower::Init(SDL_Renderer* screen)
 {
     LoadImg("img//player_pw.png", screen);
@@ -40,20 +30,30 @@ void PlayerPower::Init(SDL_Renderer* screen)
     AddPos(100);
 }
 
+void PlayerPower::Show(SDL_Renderer* screen)
+{
+    for (int i = 0; i < (int)position_list_.size(); i++)
+    {
+        rect_.x = position_list_.at(i);
+        rect_.y = 0;
+        Render(screen);
+    }
+}
+
 void PlayerPower::Decrease()
 {
     number_--;
     position_list_.pop_back();
 }
 
-void PlayerPower::InCrease()
+void PlayerPower::Increase()
 {
     number_++;
     int last_post = position_list_.back();
     last_post += 40;
     position_list_.push_back(last_post);
 
-    Mix_Chunk* two_beep_chunk = Mix_LoadWAV("sound//two_beep.wav");
+    Mix_Chunk* two_beep_chunk = Mix_LoadWAV(g_name_sound_increase);
     if (two_beep_chunk != NULL)
         Mix_PlayChannel(-1, two_beep_chunk, 0 );
 }
@@ -62,7 +62,8 @@ void PlayerPower::InCrease()
 
 PlayerMoney::PlayerMoney()
 {
-
+    x_pos_ = 0;
+    y_pos_ = 0;
 }
 
 PlayerMoney::~PlayerMoney()

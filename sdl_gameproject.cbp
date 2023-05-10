@@ -27,6 +27,16 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-lmingw32" />
+					<Add option="-lSDL2main" />
+					<Add option="-lSDL2" />
+					<Add option="-lSDL2_image" />
+					<Add option="-lSDL2_mixer" />
+					<Add option="-lSDL2_ttf" />
+					<Add option="-lSDL2.dll" />
+					<Add option="-lSDL2_image.dll" />
+					<Add option="-lSDL2_mixer.dll" />
+					<Add option="-lSDL2_ttf.dll" />
 				</Linker>
 			</Target>
 		</Build>
@@ -43,11 +53,10 @@
 		<Unit filename="include/Geometric.h" />
 		<Unit filename="include/ImpTimer.h" />
 		<Unit filename="include/MainObject.h" />
+		<Unit filename="include/MenuGame.h" />
 		<Unit filename="include/PlayerPower.h" />
 		<Unit filename="include/TextObject.h" />
 		<Unit filename="include/ThreatsObject.h" />
-		<Unit filename="include/stdafx.h" />
-		<Unit filename="include/targetver.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/BaseObject.cpp" />
 		<Unit filename="src/BossObject.cpp" />
@@ -58,10 +67,10 @@
 		<Unit filename="src/Geometric.cpp" />
 		<Unit filename="src/ImpTimer.cpp" />
 		<Unit filename="src/MainObject.cpp" />
+		<Unit filename="src/MenuGame.cpp" />
 		<Unit filename="src/PlayerPower.cpp" />
 		<Unit filename="src/TextObject.cpp" />
 		<Unit filename="src/ThreatsObject.cpp" />
-		<Unit filename="src/stdafx.cpp" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

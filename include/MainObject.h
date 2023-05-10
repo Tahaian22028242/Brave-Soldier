@@ -30,7 +30,7 @@ public:
     void set_clips();
     bool LoadImg(std::string path, SDL_Renderer* screen);
     void Show(SDL_Renderer* des);
-    void HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_Chunk* bullet_sound[3]);
+    void HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_Chunk* bullet_sound);
     void SetMapXY(const int map_x, const int map_y)
     {
         map_x_ = map_x, map_y_ = map_y;
@@ -50,7 +50,7 @@ public:
         p_bullet_list_ = bullet_list;
     }
 
-    void SpawnBullet(SDL_Renderer* screen);
+    //void SpawnBullet(SDL_Renderer* screen);
     void HandleBullet(SDL_Renderer* des);
     void RemoveBullet(const int& idx);
 
@@ -62,9 +62,9 @@ public:
     {
         return height_frame_;
     }
-    void set_think_time(const int& think_time)
+    void set_comeback_time(const int& comeback_time)
     {
-        think_time_ = think_time;
+        comeback_time_ = comeback_time;
     }
     SDL_Rect GetRectFrame();
     void UpdateImagePlayer(SDL_Renderer* des);
@@ -80,15 +80,15 @@ private:
     std::vector<BulletObject*> p_bullet_list_;
 
     bool is_jump_;
-    int frame_;
-    int status_;
 
+    int frame_;
     SDL_Rect frame_clip_[8];
+    int status_;
     Input input_type_;
 
     bool on_ground_;
-    int think_time_;
-    //int number_of_think_time_;
+    int comeback_time_;
+    //int number_of_comeback_time_;
     int map_x_;
     int map_y_;
 
@@ -100,9 +100,9 @@ private:
     int width_frame_;
     int height_frame_;
 
-    bool continuous_bullet;
-    int current_time;
-    int last_time;
+//    bool continuous_bullet;
+//    int current_time;
+//    int last_time;
 };
 
 

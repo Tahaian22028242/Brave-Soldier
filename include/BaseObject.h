@@ -10,8 +10,8 @@ public:
     ~BaseObject();
     virtual bool LoadImg(std::string path, SDL_Renderer* screen);
     void Render(SDL_Renderer* des, const SDL_Rect* clip = NULL);
-
     void Free();
+
     void SetRect(const int& x, const int& y)
     {
         rect_.x = x, rect_.y = y;
@@ -28,8 +28,8 @@ public:
     void setColor(const Uint8& red, const Uint8& green, const Uint8& blue);
     void setAlpha(const Uint8& alpha);
     void setBlendMode(const SDL_BlendMode& blending);
-
-protected:
+    //int ShowMenu(SDL_Renderer* des, TTF_Font* font);
+//protected:
     SDL_Texture* p_object_;
     SDL_Rect rect_;
 };
