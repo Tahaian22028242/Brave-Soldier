@@ -19,6 +19,7 @@ BaseObject g_over;
 
 TTF_Font* g_font_text = NULL;
 TTF_Font* g_font_menu = NULL;
+
 bool InitData()
 {
 
@@ -65,7 +66,7 @@ bool InitData()
         }
 
         g_font_text = TTF_OpenFont("font//dlxfont.ttf", 15);
-        g_font_menu = TTF_OpenFont("font//ryujin-attack.regular", 30);
+        g_font_menu = TTF_OpenFont("font//ryujin-attack.regular.ttf", 30);
         if (g_font_text == NULL || g_font_menu == NULL)
         {
             std::cout << "Open Font Error!";
@@ -106,10 +107,18 @@ void close()
     SDL_DestroyWindow(g_window);
     g_window = NULL;
     g_background.Free();
+    g_menu.Free();
+    g_over.Free();
+    Mix_FreeChunk(g_background_music);
+    Mix_FreeChunk(g_menu_music);
+    Mix_FreeChunk(g_game_over_music);
     Mix_FreeChunk(g_sound_bullet_main);
     Mix_FreeChunk(g_sound_bullet_threats);
     Mix_FreeChunk(g_sound_explosion);
     Mix_FreeChunk(g_sound_explosion_dead);
+    g_background_music = NULL;
+    g_menu_music = NULL;
+    g_game_over_music = NULL;
     g_sound_bullet_main = NULL;
     g_sound_bullet_threats = NULL;
     g_sound_explosion = NULL;
@@ -252,13 +261,14 @@ int main(int argc, char* argv[])
     money_count.setColor(TextObject::WHITE_TEXT);
 
     int num_die = 0;
+    int num_bullet_to_boss = 0;
     unsigned int mark_value = 0;
 
     MenuGame StartButton;
     MenuGame ExitButton;
-    MenuGame ReplayButton;
+    //MenuGame ReplayButton;
 
-    g_menu.LoadImg(g_name_background, g_screen);
+    g_menu.LoadImg(g_name_menu, g_screen);
     g_over.LoadImg(g_name_over, g_screen);
 
     bool in_menu = true;
@@ -280,364 +290,351 @@ int main(int argc, char* argv[])
             ExitButton.HandleQuitButton(g_event, g_screen, in_menu, g_font_menu);
         }
 
-        StartButton.SetRect(SCREEN_WIDTH/2-PlayButton.get_width_frame()/2,SCREEN_HEIGHT/2);
-        ExitButton.SetRect(SCREEN_WIDTH/2-QuitButton.get_width_frame()/2,SCREEN_HEIGHT/2+100);
+        StartButton.SetRect(200, 400);
+        ExitButton.SetRect(200, 450);
         g_menu.Render(g_screen);
 
-        PlayButton.Render(g_screen);
-        QuitButton.Render(g_screen);
+        StartButton.Render(g_screen);
+        ExitButton.Render(g_screen);
         SDL_RenderPresent(g_screen);
 
     }
 
     bool end_game = false;
 
-    while(!quit)
+    while (!quit)
     {
         fps.start();
         Mix_HaltChannel(1);
-        if(!Mix_Playing(2))
+        if (!Mix_Playing(2))
         {
             Mix_PlayChannel(2, g_background_music ,-1);
         }
-        if(!GameOver)
+        if (!end_game)
         {
             Mix_HaltChannel(3);
             while (SDL_PollEvent(&g_event) != 0)
             {
             //User requests quit
-            if(g_event.type == SDL_QUIT)
-            {
-                quit = true;
+                if(g_event.type == SDL_QUIT)
+                {
+                    quit = true;
+                }
+
+                p_player.HandleInputAction(g_event, g_screen, g_sound_bullet_main);
             }
 
-            p_player.HandleInputAction(g_event, g_screen, g_sound_bullet_main);
-        }
+            SDL_SetRenderDrawColor(g_screen, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR);
+            SDL_RenderClear(g_screen);
 
-        SDL_SetRenderDrawColor(g_screen, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR, RENDER_DRAW_COLOR);
-        SDL_RenderClear(g_screen);
+            g_background.Render(g_screen, NULL);
 
-        g_background.Render(g_screen, NULL);
+            Map ga_map = game_map.GetMap();
 
-        Map ga_map = game_map.GetMap();
-
-        //p_player.SpawnBullet(g_screen);
-        p_player.HandleBullet(g_screen);
-        p_player.SetMapXY(ga_map.start_x_, ga_map.start_y_);
-        p_player.DoPlayer(ga_map);
-        p_player.Show(g_screen);
+            //p_player.SpawnBullet(g_screen);
+            p_player.HandleBullet(g_screen);
+            p_player.SetMapXY(ga_map.start_x_, ga_map.start_y_);
+            p_player.DoPlayer(ga_map);
+            p_player.Show(g_screen);
 
 
-        game_map.SetMap(ga_map);
-        game_map.DrawMap(g_screen);
+            game_map.SetMap(ga_map);
+            game_map.DrawMap(g_screen);
 
-        //Draw Geometric
-        GeometricFormat rectange_size(0, 0, SCREEN_WIDTH, 40);
-        ColorData color_data(36, 36, 36);
-        Geometric::RenderRectange(rectange_size, color_data, g_screen);
+            //Draw Geometric
+            GeometricFormat rectange_size(0, 0, SCREEN_WIDTH, 40);
+            ColorData color_data(36, 36, 36);
+            Geometric::RenderRectange(rectange_size, color_data, g_screen);
 
-        GeometricFormat outline_size(1, 1, SCREEN_WIDTH - 1, 38);
-        ColorData color_data1(255, 255, 255);
-        Geometric::RenderOutline(outline_size, color_data1, g_screen);
+            GeometricFormat outline_size(1, 1, SCREEN_WIDTH - 1, 38);
+            ColorData color_data1(255, 255, 255);
+            Geometric::RenderOutline(outline_size, color_data1, g_screen);
 
-        player_power.Show(g_screen);
-        player_money.Show(g_screen);
+            player_power.Show(g_screen);
+            player_money.Show(g_screen);
 
-        //Show threats
-        SDL_Rect rect_player = p_player.GetRectFrame();
-        //bool is_big_threat = false;
-        for (int i = 0; i < (int)threats_list1.size(); i++)
-        {
-            ThreatsObject* obj_threat1 = threats_list1.at(i);
-            if (obj_threat1 != NULL)
+            //Show threats
+            SDL_Rect rect_player = p_player.GetRectFrame();
+            //bool is_big_threat = false;
+            for (int i = 0; i < (int)threats_list1.size(); i++)
             {
-                obj_threat1->SetMapXY(ga_map.start_x_, ga_map.start_y_);
-                obj_threat1->ImpMoveType(g_screen);
-                obj_threat1->DoThreats(ga_map, g_screen);
-                obj_threat1->MakeBulletForSmallThreats(g_screen, SCREEN_WIDTH, SCREEN_HEIGHT);
-                obj_threat1->Show(g_screen);
-
-                //COLLISION THREAT BULLET -> MAIN OBJECT
-                bool is_col1 = false;
-                std::vector<BulletObject*> th_bullet_list1 = obj_threat1->get_bullet_list();
-                for (int am = 0; am < (int)th_bullet_list1.size(); am++)
+                ThreatsObject* obj_threat1 = threats_list1.at(i);
+                if (obj_threat1 != NULL)
                 {
-                    BulletObject* th_bullet1 = th_bullet_list1.at(am);
-                    if (th_bullet1 != NULL)
+                    obj_threat1->SetMapXY(ga_map.start_x_, ga_map.start_y_);
+                    obj_threat1->ImpMoveType(g_screen);
+                    obj_threat1->DoThreats(ga_map, g_screen);
+                    obj_threat1->MakeBulletForSmallThreats(g_screen, SCREEN_WIDTH, SCREEN_HEIGHT);
+                    obj_threat1->Show(g_screen);
+
+                    //COLLISION THREAT BULLET -> MAIN OBJECT
+                    bool is_col1 = false;
+                    std::vector<BulletObject*> th_bullet_list1 = obj_threat1->get_bullet_list();
+                    for (int am = 0; am < (int)th_bullet_list1.size(); am++)
                     {
-                        is_col1 = SDLCommonFunction::CheckCollision(th_bullet1->GetRect(), rect_player);
-                        if (is_col1 == true)
+                        BulletObject* th_bullet1 = th_bullet_list1.at(am);
+                        if (th_bullet1 != NULL)
                         {
-                            obj_threat1->RemoveBullet(am);
-                            //Mix_PlayChannel(-1, g_sound_explosion, 0);
-                            break;
-                        }
-                    }
-                }
-                //COLLISION THREAT OBJECT -> MAIN OBJECT
-                SDL_Rect rect_threat1 = obj_threat1->GetRectFrame();
-                bool is_col2 = SDLCommonFunction::CheckCollision(rect_player, rect_threat1);
-                if (is_col2 || is_col1)
-                {
-                    int width_exp_frame = exp_main.get_frame_height();
-                    int height_exp_frame = exp_main.get_frame_width();
-                    for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
-                    {
-                        int x_pos = (p_player.GetRect().x + p_player.get_frame_width()*0.5) - width_exp_frame*0.5;
-                        int y_pos = (p_player.GetRect().y + p_player.get_frame_height()*0.5) - height_exp_frame*0.5;
-
-                        exp_main.set_frame(ex);
-                        exp_main.SetRect(x_pos, y_pos);
-                        exp_main.Show(g_screen);
-                    }
-                    num_die++;
-                    Mix_PlayChannel(-1, g_sound_explosion, 0);
-                    //Re-render main object after collision
-                    p_player.SetRect(0, 0);
-                    p_player.set_comeback_time(COMEBACK_TIME);
-                    SDL_Delay(DELAY_TIME_FOR_COLLISION);
-                    player_power.Decrease();
-                    player_power.Render(g_screen);
-                    continue;
-                }
-            }
-        }
-
-
-        for (int i = 0; i < (int)threats_list2.size(); i++)
-        {
-            ThreatsObject* obj_threat2 = threats_list2.at(i);
-            if (obj_threat2 != NULL)
-            {
-                obj_threat2->SetMapXY(ga_map.start_x_, ga_map.start_y_);
-                obj_threat2->ImpMoveType(g_screen);
-                obj_threat2->DoThreats(ga_map, g_screen);
-                obj_threat2->MakeBulletForBigThreats(g_screen, SCREEN_WIDTH, SCREEN_HEIGHT);
-                obj_threat2->Show(g_screen);
-
-                //COLLISION THREAT BULLET -> MAIN OBJECT
-                bool is_col1 = false;
-                std::vector<BulletObject*> th_bullet_list2 = obj_threat2->get_bullet_list();
-                for (int am = 0; am < (int)th_bullet_list2.size(); am++)
-                {
-                    BulletObject* th_bullet2 = th_bullet_list2.at(am);
-                    if (th_bullet2 != NULL)
-                    {
-                        is_col1 = SDLCommonFunction::CheckCollision(th_bullet2->GetRect(), rect_player);
-                        if (is_col1 == true)
-                        {
-                            obj_threat2->RemoveBullet(am);
-                            break;
-                        }
-                    }
-                }
-
-                //COLLISION THREAT OBJECT -> MAIN OBJECT
-                SDL_Rect rect_threat2 = obj_threat2->GetRectFrame();
-                bool is_col2 = SDLCommonFunction::CheckCollision(rect_player, rect_threat2);
-                if (is_col2 || is_col1)
-                {
-                    //walk_object.set_is_move(true);
-                    int height_exp_frame = exp_main.get_frame_height();
-                    int width_exp_frame = exp_main.get_frame_width();
-                    for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
-                    {
-                        int x_pos = (p_player.GetRect().x + p_player.get_frame_width()*0.5) - width_exp_frame*0.5;
-                        int y_pos = (p_player.GetRect().y + p_player.get_frame_height()*0.5) - height_exp_frame*0.5;
-                        exp_main.set_frame(ex);
-                        exp_main.SetRect(x_pos, y_pos);
-                        exp_main.Show(g_screen);
-                    }
-                    num_die++;
-                    //Re-render main object after collision
-                    p_player.SetRect(0, 0);
-                    p_player.set_comeback_time(COMEBACK_TIME);
-                    SDL_Delay(DELAY_TIME_FOR_COLLISION);
-                    player_power.Decrease();
-                    player_power.Render(g_screen);
-                    continue;
-
-                    Mix_PlayChannel(-1, g_sound_explosion, 0);
-                }
-            }
-        }
-
-        //COLLISION BOSS BULLET -> MAIN OBJECT
-        bool is_col_boss_bullet = false;
-        std::vector<BulletObject*> boss_bullet_list = bossObject.get_bullet_list();
-        for (int am = 0; am < (int)boss_bullet_list.size(); am++)
-        {
-            BulletObject* boss_bullet = boss_bullet_list.at(am);
-            if (boss_bullet != NULL)
-            {
-                is_col_boss_bullet = SDLCommonFunction::CheckCollision(boss_bullet->GetRect(), rect_player);
-                if (is_col_boss_bullet == true)
-                {
-                    bossObject.RemoveBullet(am);
-                    break;
-                }
-            }
-        }
-
-        //COLLISION BOSS OBJECT -> MAIN OBJECT
-        bool is_col_boss = SDLCommonFunction::CheckCollision(rect_player, bossObject.GetRectFrame());
-        if (is_col_boss || is_col_boss_bullet)
-        {
-            //obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
-            //walk_object.set_is_move(true);
-            int width_exp_frame = exp_main.get_frame_height();
-            int height_exp_frame = exp_main.get_frame_width();
-            for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
-            {
-                int x_pos = (p_player.GetRect().x + p_player.get_frame_width()*0.5) - width_exp_frame*0.5;
-                int y_pos = (p_player.GetRect().y + p_player.get_frame_height()*0.5) - height_exp_frame*0.5;
-
-                exp_main.set_frame(ex);
-                exp_main.SetRect(x_pos, y_pos);
-                exp_main.Show(g_screen);
-                //SDL_RenderPresent(g_screen);
-            }
-
-            num_die++;
-            Mix_PlayChannel(-1, g_sound_explosion, 0);
-            //Re-render main object after collision
-            p_player.SetRect(0, 0);
-            p_player.set_comeback_time(COMEBACK_TIME);
-            SDL_Delay(DELAY_TIME_FOR_COLLISION);
-            player_power.Decrease();
-            player_power.Render(g_screen);
-            continue;
-        }
-        //Die condition
-//        if (num_die > 3)
-//        {
-//            Mix_PlayChannel(-1, g_sound_explosion_dead, 0);
-//            if (MessageBox(NULL, "YOU DIED!", "GAME OVER", MB_OK | MB_ICONSTOP) == IDOK)
-//            {
-//                close();
-//                SDL_Quit();
-//                return 0;
-//            }
-//        }
-
-
-        //COLLISION THREAT -> Main Bullet
-        std::vector<BulletObject*> bullet_arr = p_player.get_bullet_list();
-
-        int frame_exp_width = exp_threats.get_frame_width();
-        int frame_exp_height = exp_threats.get_frame_width();
-
-        for (int am = 0; am < (int)bullet_arr.size(); ++am)
-        {
-            BulletObject* p_bullet = bullet_arr.at(am);
-            if (p_bullet != NULL)
-            {
-                //p_bullet->CheckToMap(ga_map, g_screen);
-                for (int i = 0; i < (int)threats_list1.size(); i++)
-                {
-                    ThreatsObject* obj_threat1 = threats_list1.at(i);
-
-                    SDL_Rect threat_rect = obj_threat1->GetRectFrame();
-
-                    bool is_col = SDLCommonFunction::CheckCollision(p_bullet->GetRect(), threat_rect);
-                    if (is_col)
-                    {
-                        mark_value++;
-                        for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
-                        {
-                            //set exp pos
-                            int x_pos = p_bullet->GetRect().x - frame_exp_width*0.5;
-                            int y_pos = p_bullet->GetRect().y - frame_exp_height*0.5;
-
-                            exp_threats.set_frame(ex);
-                            exp_threats.SetRect(x_pos, y_pos);
-                            exp_threats.Show(g_screen);
-                            SDL_Rect threat_rect = obj_threat1->GetRectFrame();
-
-                            bool is_col = SDLCommonFunction::CheckCollision(p_bullet->GetRect(), threat_rect);
-                            if (is_col)
+                            is_col1 = SDLCommonFunction::CheckCollision(th_bullet1->GetRect(), rect_player);
+                            if (is_col1 == true)
                             {
-                                mark_value++;
-                                for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
-                                {
-                                    //set exp pos
-                                    int x_pos = p_bullet->GetRect().x - frame_exp_width*0.5;
-                                    int y_pos = p_bullet->GetRect().y - frame_exp_height*0.5;
-
-                                    exp_threats.set_frame(ex);
-                                    exp_threats.SetRect(x_pos, y_pos);
-                                    exp_threats.Show(g_screen);
-                                }
-
-                                p_player.RemoveBullet(am);
-
-                                obj_threat1->Free();
-                                threats_list1.erase(threats_list1.begin() + i);
-                                Mix_PlayChannel(-1, g_sound_explosion, 0);
+                                obj_threat1->RemoveBullet(am);
+                                //Mix_PlayChannel(-1, g_sound_explosion, 0);
+                                break;
                             }
                         }
-                        //obj_threat1->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
                     }
-                }
-
-                for (int i = 0; i < (int)threats_list2.size(); i++)
-                {
-                    ThreatsObject* obj_threat2 = threats_list2.at(i);
-
-                    SDL_Rect threat_rect = obj_threat2->GetRectFrame();
-
-                    bool is_col = SDLCommonFunction::CheckCollision(p_bullet->GetRect(), threat_rect);
-                    if (is_col)
+                    //COLLISION THREAT OBJECT -> MAIN OBJECT
+                    SDL_Rect rect_threat1 = obj_threat1->GetRectFrame();
+                    bool is_col2 = SDLCommonFunction::CheckCollision(rect_player, rect_threat1);
+                    if (is_col2 || is_col1)
                     {
-                        mark_value++;
+                        int width_exp_frame = exp_main.get_frame_height();
+                        int height_exp_frame = exp_main.get_frame_width();
                         for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
                         {
-                            //set exp pos
-                            int x_pos = p_bullet->GetRect().x - frame_exp_width*0.5;
-                            int y_pos = p_bullet->GetRect().y - frame_exp_height*0.5;
+                            int x_pos = (p_player.GetRect().x + p_player.get_frame_width()*0.5) - width_exp_frame*0.5;
+                            int y_pos = (p_player.GetRect().y + p_player.get_frame_height()*0.5) - height_exp_frame*0.5;
 
-                            exp_threats.set_frame(ex);
-                            exp_threats.SetRect(x_pos, y_pos);
-                            exp_threats.Show(g_screen);
+                            exp_main.set_frame(ex);
+                            exp_main.SetRect(x_pos, y_pos);
+                            exp_main.Show(g_screen);
                         }
-//
-//                        obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
+                        num_die++;
+                        Mix_PlayChannel(-1, g_sound_explosion, 0);
+                        //Re-render main object after collision
+                        p_player.SetRect(0, 0);
+                        p_player.set_comeback_time(COMEBACK_TIME);
+                        SDL_Delay(DELAY_TIME_FOR_COLLISION);
+                        player_power.Decrease();
+                        player_power.Render(g_screen);
+                        continue;
+                    }
+                }
+            }
 
-                        p_player.RemoveBullet(am);
 
-                        obj_threat2->Free();
-                        threats_list2.erase(threats_list2.begin() + i);
+            for (int i = 0; i < (int)threats_list2.size(); i++)
+            {
+                ThreatsObject* obj_threat2 = threats_list2.at(i);
+                if (obj_threat2 != NULL)
+                {
+                    obj_threat2->SetMapXY(ga_map.start_x_, ga_map.start_y_);
+                    obj_threat2->ImpMoveType(g_screen);
+                    obj_threat2->DoThreats(ga_map, g_screen);
+                    obj_threat2->MakeBulletForBigThreats(g_screen, SCREEN_WIDTH, SCREEN_HEIGHT);
+                    obj_threat2->Show(g_screen);
+
+                    //COLLISION THREAT BULLET -> MAIN OBJECT
+                    bool is_col1 = false;
+                    std::vector<BulletObject*> th_bullet_list2 = obj_threat2->get_bullet_list();
+                    for (int am = 0; am < (int)th_bullet_list2.size(); am++)
+                    {
+                        BulletObject* th_bullet2 = th_bullet_list2.at(am);
+                        if (th_bullet2 != NULL)
+                        {
+                            is_col1 = SDLCommonFunction::CheckCollision(th_bullet2->GetRect(), rect_player);
+                            if (is_col1 == true)
+                            {
+                                obj_threat2->RemoveBullet(am);
+                                break;
+                            }
+                        }
+                    }
+
+                    //COLLISION THREAT OBJECT -> MAIN OBJECT
+                    SDL_Rect rect_threat2 = obj_threat2->GetRectFrame();
+                    bool is_col2 = SDLCommonFunction::CheckCollision(rect_player, rect_threat2);
+                    if (is_col2 || is_col1)
+                    {
+                        //walk_object.set_is_move(true);
+                        int height_exp_frame = exp_main.get_frame_height();
+                        int width_exp_frame = exp_main.get_frame_width();
+                        for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
+                        {
+                            int x_pos = (p_player.GetRect().x + p_player.get_frame_width()*0.5) - width_exp_frame*0.5;
+                            int y_pos = (p_player.GetRect().y + p_player.get_frame_height()*0.5) - height_exp_frame*0.5;
+                            exp_main.set_frame(ex);
+                            exp_main.SetRect(x_pos, y_pos);
+                            exp_main.Show(g_screen);
+                        }
+                        num_die++;
+                        //Re-render main object after collision
+                        p_player.SetRect(0, 0);
+                        p_player.set_comeback_time(COMEBACK_TIME);
+                        SDL_Delay(DELAY_TIME_FOR_COLLISION);
+                        player_power.Decrease();
+                        player_power.Render(g_screen);
+                        continue;
 
                         Mix_PlayChannel(-1, g_sound_explosion, 0);
                     }
                 }
+            }
 
-                //COLLISION BOSS -> Main Bullet
-                bool is_col_bullet_boss = SDLCommonFunction::CheckCollision(p_bullet->GetRect(), bossObject.GetRectFrame());
-                int num_bullet_to_boss = 0;
-                if (is_col_bullet_boss)
+            //COLLISION BOSS BULLET -> MAIN OBJECT
+            bool is_col_boss_bullet = false;
+            std::vector<BulletObject*> boss_bullet_list = bossObject.get_bullet_list();
+            for (int am = 0; am < (int)boss_bullet_list.size(); am++)
+            {
+                BulletObject* boss_bullet = boss_bullet_list.at(am);
+                if (boss_bullet != NULL)
                 {
-                    num_bullet_to_boss++;
-                    for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
+                    is_col_boss_bullet = SDLCommonFunction::CheckCollision(boss_bullet->GetRect(), rect_player);
+                    if (is_col_boss_bullet == true)
                     {
+                        bossObject.RemoveBullet(am);
+                        break;
+                    }
+                }
+            }
+
+            //COLLISION BOSS OBJECT -> MAIN OBJECT
+            bool is_col_boss = SDLCommonFunction::CheckCollision(rect_player, bossObject.GetRectFrame());
+            if (is_col_boss || is_col_boss_bullet)
+            {
+                //obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
+                //walk_object.set_is_move(true);
+                int width_exp_frame = exp_main.get_frame_height();
+                int height_exp_frame = exp_main.get_frame_width();
+                for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
+                {
+                    int x_pos = (p_player.GetRect().x + p_player.get_frame_width()*0.5) - width_exp_frame*0.5;
+                    int y_pos = (p_player.GetRect().y + p_player.get_frame_height()*0.5) - height_exp_frame*0.5;
+
+                    exp_main.set_frame(ex);
+                    exp_main.SetRect(x_pos, y_pos);
+                    exp_main.Show(g_screen);
+                    //SDL_RenderPresent(g_screen);
+                }
+
+                num_die++;
+                Mix_PlayChannel(-1, g_sound_explosion, 0);
+                //Re-render main object after collision
+                p_player.SetRect(0, 0);
+                p_player.set_comeback_time(COMEBACK_TIME);
+                SDL_Delay(DELAY_TIME_FOR_COLLISION);
+                player_power.Decrease();
+                player_power.Render(g_screen);
+                continue;
+            }
+
+            //COLLISION THREAT -> Main Bullet
+            std::vector<BulletObject*> bullet_arr = p_player.get_bullet_list();
+
+            int frame_exp_width = exp_threats.get_frame_width();
+            int frame_exp_height = exp_threats.get_frame_width();
+
+            for (int am = 0; am < (int)bullet_arr.size(); ++am)
+            {
+                BulletObject* p_bullet = bullet_arr.at(am);
+                if (p_bullet != NULL)
+                {
+                    //p_bullet->CheckToMap(ga_map, g_screen);
+                    for (int i = 0; i < (int)threats_list1.size(); i++)
+                    {
+                        ThreatsObject* obj_threat1 = threats_list1.at(i);
+
+                        SDL_Rect threat_rect = obj_threat1->GetRectFrame();
+
+                        bool is_col = SDLCommonFunction::CheckCollision(p_bullet->GetRect(), threat_rect);
+                        if (is_col)
+                        {
+                            mark_value++;
+                            for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
+                            {
+                                //set exp pos
+                                int x_pos = p_bullet->GetRect().x - frame_exp_width*0.5;
+                                int y_pos = p_bullet->GetRect().y - frame_exp_height*0.5;
+
+                                exp_threats.set_frame(ex);
+                                exp_threats.SetRect(x_pos, y_pos);
+                                exp_threats.Show(g_screen);
+                                SDL_Rect threat_rect = obj_threat1->GetRectFrame();
+
+                                bool is_col = SDLCommonFunction::CheckCollision(p_bullet->GetRect(), threat_rect);
+                                if (is_col)
+                                {
+                                    mark_value++;
+                                    for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
+                                    {
+                                        //set exp pos
+                                        int x_pos = p_bullet->GetRect().x - frame_exp_width*0.5;
+                                        int y_pos = p_bullet->GetRect().y - frame_exp_height*0.5;
+
+                                        exp_threats.set_frame(ex);
+                                        exp_threats.SetRect(x_pos, y_pos);
+                                        exp_threats.Show(g_screen);
+                                    }
+
+                                    p_player.RemoveBullet(am);
+
+                                    obj_threat1->Free();
+                                    threats_list1.erase(threats_list1.begin() + i);
+                                    Mix_PlayChannel(-1, g_sound_explosion, 0);
+                                }
+                            }
+                        //obj_threat1->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
+                        }
+                    }
+
+                    for (int i = 0; i < (int)threats_list2.size(); i++)
+                    {
+                        ThreatsObject* obj_threat2 = threats_list2.at(i);
+
+                        SDL_Rect threat_rect = obj_threat2->GetRectFrame();
+
+                        bool is_col = SDLCommonFunction::CheckCollision(p_bullet->GetRect(), threat_rect);
+                        if (is_col)
+                        {
+                            mark_value++;
+                            for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
+                            {
+                                //set exp pos
+                                int x_pos = p_bullet->GetRect().x - frame_exp_width*0.5;
+                                int y_pos = p_bullet->GetRect().y - frame_exp_height*0.5;
+
+                                exp_threats.set_frame(ex);
+                                exp_threats.SetRect(x_pos, y_pos);
+                                exp_threats.Show(g_screen);
+                            }
+//
+//                        obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+                            p_player.RemoveBullet(am);
+
+                            obj_threat2->Free();
+                            threats_list2.erase(threats_list2.begin() + i);
+
+                            Mix_PlayChannel(-1, g_sound_explosion, 0);
+                        }
+                    }
+
+                    //COLLISION BOSS -> Main Bullet
+                    bool is_col_bullet_boss = SDLCommonFunction::CheckCollision(p_bullet->GetRect(), bossObject.GetRectFrame());
+                    //int num_bullet_to_boss = 0;
+                    if (is_col_bullet_boss)
+                    {
+                        num_bullet_to_boss++;
+                        for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
+                        {
                         //set exp pos
                         int x_pos = p_bullet->GetRect().x - frame_exp_width*0.5;
                         int y_pos = p_bullet->GetRect().y - frame_exp_height*0.5;
                         exp_threats.set_frame(ex);
                         exp_threats.SetRect(x_pos, y_pos);
                         exp_threats.Show(g_screen);
+                        }
+                        //obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
+                        p_player.RemoveBullet(am);
                     }
-//                  obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
-                    p_player.RemoveBullet(am);
 
+                    if (num_bullet_to_boss >= 10)
+                    {
+                        bossObject.Free();
+                        Mix_PlayChannel(-1, g_sound_explosion, 0);
+                    }
                 }
-
-                if (num_bullet_to_boss >= 10)
-                {
-                    bossObject.Free();
-                    Mix_PlayChannel(-1, g_sound_explosion, 0);
-                }
-            }
             }
             //Show time for game
             std::string str_time = "Time: ";
@@ -695,40 +692,59 @@ int main(int argc, char* argv[])
             //Update screen
             SDL_RenderPresent(g_screen);
         }
-    }
 
         else
         {
             Mix_HaltChannel(2);
+
             if (!Mix_Playing(3))
             {
                 Mix_PlayChannel(3, g_game_over_music,-1);
             }
+
             g_over.Render(g_screen);
-        }
 
-
-        for (int i = 0; i < (int)threats_list1.size(); ++i)
-        {
-            ThreatsObject* p_threat = threats_list1.at(i);
-            if (p_threat)
+            while(SDL_PollEvent(&g_event)!=0)
             {
-            p_threat->Free();
-            p_threat = NULL;
+                if(g_event.type==SDL_QUIT)
+                {
+                    quit  = true;
+                }
+                 ExitButton.HandleQuitButton(g_event, g_screen, quit, g_font_menu);
+                 //ReplayButton.HandleRetryButton(g_event, g_screen, Enemy_List, spaceship,Bullet_List,wave,score,GameOver);
             }
-        }
-        threats_list1.clear();
+            ExitButton.SetRect(200, 450);
+            //ReplayButton.SetRect(50,SCREEN_HEIGHT-ReplayButton.get_height_frame()-80);
+            ExitButton.Render(g_screen);
+            //ReplayButton.Render(g_screen);
 
-        for (int i = 0; i < (int)threats_list2.size(); i++)
+            SDL_RenderPresent(g_screen);
+        }
+    }
+
+
+    for (int i = 0; i < (int)threats_list1.size(); ++i)
+    {
+        ThreatsObject* p_threat = threats_list1.at(i);
+        if (p_threat)
         {
-            ThreatsObject* p_threat = threats_list2.at(i);
             p_threat->Free();
             p_threat = NULL;
         }
-        threats_list2.clear();
+    }
+    threats_list1.clear();
 
-    //bossObject.Free();
+    for (int i = 0; i < (int)threats_list2.size(); i++)
+    {
+        ThreatsObject* p_threat = threats_list2.at(i);
+        p_threat->Free();
+        p_threat = NULL;
+    }
+    threats_list2.clear();
+
+    bossObject.Free();
 
     close();
+
     return 0;
 }

@@ -111,18 +111,18 @@ void MenuGame::HandleQuitButton(SDL_Event event, SDL_Renderer* screen, bool &qui
     }
 }
 
-void MenuGame::HandleRetryButton(SDL_Event event, SDL_Renderer* screen, bool& quit, vector<ThreatObject*> threats_list, MainObject &p_object, vector<BulletObject*> &bullet_list, bool &quit)
-{
-    if (IsInside(event))
-	{
-	    LoadButton("img//retry2.png",screen);
-	    if(event.type==SDL_MOUSEBUTTONDOWN)
-		{
-		    quit = false;
-		}
-	}
-	else
-    {
-        LoadButton("retry.png",screen);
-    }
-}
+//void MenuGame::HandleRetryButton(SDL_Event event, SDL_Renderer* screen, bool& quit, vector<ThreatObject*> threats_list, MainObject &p_object, vector<BulletObject*> &bullet_list, bool &quit)
+//{
+//    if (IsInside(event))
+//	{
+//	    LoadButton("img//retry2.png",screen);
+//	    if(event.type==SDL_MOUSEBUTTONDOWN)
+//		{
+//		    quit = false;
+//		}
+//	}
+//	else
+//    {
+//        LoadButton("retry.png",screen);
+//    }
+//}

@@ -37,7 +37,9 @@ const int COLOR_KEY_G = 175;
 const int COLOR_KEY_B = 180;
 
 static char g_name_background[] = {"img//newbackground.png"};
+static char g_name_menu[] = {"img//menu_background.png"};
 static char g_name_over[] = {"img//mission_failed.png"};
+
 static char g_name_map[] = {"map//map01.dat"};
 
 static char g_name_main_right[] = {"img//player_right.png"};
