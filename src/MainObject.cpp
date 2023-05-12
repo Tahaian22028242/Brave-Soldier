@@ -26,9 +26,6 @@ MainObject::MainObject()
     input_type_.up_ = 0;
     money_count_ = 0;
     status_ = WALK_NONE;
-//    current_time = 0;
-//    last_time = 0;
-//    continuous_bullet = 0;
 }
 
 MainObject::~MainObject()
@@ -166,13 +163,11 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_C
         {
             p_bullet->LoadImg(g_name_main_bullet, screen);
             Mix_PlayChannel(-1, bullet_sound, 0);
-            //p_bullet->set_type(BulletObject::SPHERE);
         }
 
         else if(events.button.button == SDL_BUTTON_RIGHT)
         {
-//            continuous_bullet = true;
-//            SpawnBullet(screen);
+            continuous_bullet = true;
         }
 
         if (status_ == WALK_LEFT)
@@ -196,27 +191,41 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer* screen, Mix_C
     {
         if (events.button.button == SDL_BUTTON_LEFT)
         {
-            ;//
+            continuous_bullet = false;
         }
         else
         {
-            ;//
+            continuous_bullet = false;
         }
     }
 }
 
-//void MainObject::SpawnBullet(SDL_Renderer* screen)
-//{
-//    current_time = SDL_GetTicks();
-//    if (continuous_bullet && current_time > last_time + 200)
-//    {
-//        BulletObject* p_bullet = new BulletObject();
-//        p_bullet->LoadImg(g_name_main_bullet, screen);
-//        p_bullet_list_.push_back(p_bullet);
-//
-//       last_time = current_time;
-//    }
-//}
+void MainObject::SpawnBullet(SDL_Renderer* screen, Mix_Chunk* bullet_sound)
+{
+    current_time = SDL_GetTicks();
+    if (continuous_bullet && current_time > last_time + 200)
+    {
+        BulletObject* p_bullet = new BulletObject();
+        p_bullet->LoadImg(g_name_main_bullet, screen);
+        if (status_ == WALK_LEFT)
+        {
+            p_bullet->set_bullet_dir(BulletObject::DIR_LEFT);
+            p_bullet->SetRect(this->rect_.x, this->rect_.y + height_frame_*0.22);
+        }
+        else
+        {
+            p_bullet->set_bullet_dir(BulletObject::DIR_RIGHT);
+            p_bullet->SetRect(this->rect_.x + width_frame_ - 20, this->rect_.y + height_frame_*0.22);
+        }
+        p_bullet->set_x_val(20);
+        p_bullet->set_y_val(20);
+        p_bullet->set_is_move(true);
+        p_bullet_list_.push_back(p_bullet);
+        Mix_PlayChannel(-1, bullet_sound, 0);
+
+        last_time = current_time;
+    }
+}
 
 void MainObject::HandleBullet(SDL_Renderer* des)//check bullet list
 {

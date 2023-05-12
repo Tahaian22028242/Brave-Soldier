@@ -62,7 +62,7 @@ void GameMap::LoadMapTiles(SDL_Renderer* screen)
 
     for (int i = 0; i < MAX_TILES; i++)
     {
-        sprintf_s(filename, "map/%d.png", i);
+        sprintf_s(filename, g_type_map, i);
 
         fopen_s(&fp, filename, "rb");
 
@@ -111,13 +111,3 @@ void GameMap::DrawMap(SDL_Renderer* des)
         map_y++;
     }
 }
-
-//SDL_Rect GameMap::GetRectFrame()
-//{
-//    SDL_Rect rect;
-//    rect.x = rect_.x;
-//    rect.y = rect_.y;
-//    rect.w = rect_.w/NUM_FRAME;
-//    rect.h = rect_.h;
-//    return rect;
-//}

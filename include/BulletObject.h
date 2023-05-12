@@ -3,7 +3,7 @@
 
 #include "BaseObject.h"
 
-#define BULLET_OBJECT_DISTANCE 300
+#define BULLET_OBJECT_DISTANCE 200
 #define BULLET_SPEED 10
 
 class BulletObject : public BaseObject
@@ -67,7 +67,7 @@ public:
     {
         return bullet_dir_;
     }
-//    bool CheckToMap(Map& g_map, SDL_Renderer* screen);
+    bool CheckToMap(Map& g_map, SDL_Renderer* screen);
 
 private:
     int x_val_;

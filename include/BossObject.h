@@ -1,11 +1,11 @@
 #ifndef BOSS_OBJECT_H_
 #define BOSS_OBJECT_H_
 
-
 #include "BaseObject.h"
 #include "CommonFunction.h"
 #include "BulletObject.h"
 
+#define BOSS_HEALTH 50
 #define BOSS_GRAVITY_SPEED 0.8
 #define MAX_FALL_SPEED 10
 
@@ -79,6 +79,10 @@ public:
     void InitBullet(SDL_Renderer* screen);
     void MakeBullet(SDL_Renderer* des, const int& x_limit, const int& y_limit);
     void RemoveBullet(const int& idx);
+    void PlusBulletDie() {num_bullet_die_++;}
+    void ResetBulletDie() {num_bullet_die_ = 0;}
+    bool CheckBulletDie();
+    bool CheckBossDie() {return m_die;}
 private:
     int map_x_;
     int map_y_;
@@ -94,6 +98,8 @@ private:
     int width_frame_;
     int height_frame_;
     std::vector<BulletObject*> bullet_list_;
+    int num_bullet_die_;
+    bool m_die;
 };
 
 

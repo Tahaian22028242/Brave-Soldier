@@ -1,0 +1,97 @@
+# depslib dependency file v1.0
+1683905775 source:c:\brave soldier\src\baseobject.cpp
+	"BaseObject.h"
+	"TextObject.h"
+
+1683735099 c:\brave soldier\include\baseobject.h
+	"CommonFunction.h"
+
+1683923640 c:\brave soldier\include\commonfunction.h
+	<windows.h>
+	<vector>
+	<string>
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_mixer.h>
+	<SDL_ttf.h>
+
+1683692965 c:\brave soldier\include\textobject.h
+	"CommonFunction.h"
+	"BaseObject.h"
+
+1683924020 source:c:\brave soldier\src\bossobject.cpp
+	"BossObject.h"
+
+1683924228 c:\brave soldier\include\bossobject.h
+	"BaseObject.h"
+	"CommonFunction.h"
+	"BulletObject.h"
+
+1683922473 c:\brave soldier\include\bulletobject.h
+	"BaseObject.h"
+
+1683902931 source:c:\brave soldier\src\bulletobject.cpp
+	"BulletObject.h"
+
+1683918292 source:c:\brave soldier\src\commonfunction.cpp
+	"CommonFunction.h"
+
+1683565291 source:c:\brave soldier\src\explosionobject.cpp
+	"ExplosionObject.h"
+
+1683454077 c:\brave soldier\include\explosionobject.h
+	"CommonFunction.h"
+	"BaseObject.h"
+
+1683921519 source:c:\brave soldier\src\gamemap.cpp
+	"GameMap.h"
+
+1683906591 c:\brave soldier\include\gamemap.h
+	"CommonFunction.h"
+	"BaseObject.h"
+
+1680106100 source:c:\brave soldier\src\geometric.cpp
+	"Geometric.h"
+
+1679653892 c:\brave soldier\include\geometric.h
+	"CommonFunction.h"
+
+1680106100 source:c:\brave soldier\src\imptimer.cpp
+	"ImpTimer.h"
+	"CommonFunction.h"
+
+1679411291 c:\brave soldier\include\imptimer.h
+
+1683897956 source:c:\brave soldier\src\mainobject.cpp
+	"MainObject.h"
+
+1683906575 c:\brave soldier\include\mainobject.h
+	"CommonFunction.h"
+	"BaseObject.h"
+	"BulletObject.h"
+	<vector>
+
+1683917697 source:c:\brave soldier\src\menugame.cpp
+	"MenuGame.h"
+
+1683918291 c:\brave soldier\include\menugame.h
+	"BaseObject.h"
+
+1683540935 source:c:\brave soldier\src\playerpower.cpp
+	"PlayerPower.h"
+
+1683455194 c:\brave soldier\include\playerpower.h
+	"CommonFunction.h"
+	"BaseObject.h"
+
+1683565291 source:c:\brave soldier\src\textobject.cpp
+	"TextObject.h"
+
+1683904928 source:c:\brave soldier\src\threatsobject.cpp
+	"ThreatsObject.h"
+
+1683904333 c:\brave soldier\include\threatsobject.h
+	"CommonFunction.h"
+	"BaseObject.h"
+	"BulletObject.h"
+

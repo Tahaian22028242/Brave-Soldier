@@ -15,6 +15,8 @@ BossObject::BossObject()
     think_time_ = 0;
     map_x_ = 0;
     map_y_ = 0;
+    num_bullet_die_ = 0;
+    m_die = false;
 }
 
 BossObject::~BossObject()
@@ -48,7 +50,7 @@ bool BossObject::LoadImg(std::string path, SDL_Renderer* screen)
 
 void BossObject::set_clips()
 {
-    //Clip the sprites
+    //Clip the spriteshe
     if (width_frame_ > 0 && height_frame_ > 0)
     {
         for (int i = 0; i < FRAME_NUM_32; ++i)
@@ -64,10 +66,13 @@ void BossObject::set_clips()
 
 void BossObject::Show(SDL_Renderer* des)
 {
+    if (m_die == true)
+        return;
+
     if (think_time_ == 0)
     {
         rect_.x = x_pos_ - map_x_;
-        rect_.y = y_pos_- map_y_;
+        rect_.y = y_pos_ - map_y_;
         frame_++;
         if( frame_ >= 32 )
         {
@@ -82,6 +87,9 @@ void BossObject::Show(SDL_Renderer* des)
 
 void BossObject::DoBoss(Map& g_map)
 {
+    if (m_die == true)
+        return;
+
     if (think_time_ == 0)
     {
         x_val_ = 0;
@@ -260,6 +268,9 @@ void BossObject::InitBullet(SDL_Renderer* screen)
 
 void BossObject::MakeBullet(SDL_Renderer* des, const int& x_limit, const int& y_limit)
 {
+    if (m_die == true)
+        return;
+
     if (frame_ == 18)
     {
         InitBullet(des);
@@ -296,4 +307,15 @@ void BossObject::RemoveBullet(const int& idx)
             b_bullet = NULL;
         }
     }
+}
+
+bool BossObject::CheckBulletDie()
+{
+    if (num_bullet_die_ >= BOSS_HEALTH)
+    {
+        m_die = true;
+        return true;
+    }
+
+    return false;
 }

@@ -18,7 +18,7 @@ BaseObject::~BaseObject()
 
 bool BaseObject::LoadImg(std::string path, SDL_Renderer* screen)
 {
-
+    Free();
     //The final texture
     SDL_Texture* newTexture = NULL;
 
@@ -41,7 +41,8 @@ bool BaseObject::LoadImg(std::string path, SDL_Renderer* screen)
         //Get rid of old loaded surface
         SDL_FreeSurface(loadedSurface);
     }
-
+    width_frame = rect_.w;
+    height_frame = rect_.h;
     //Return success
     p_object_ = newTexture;
     return p_object_ != NULL;
@@ -79,111 +80,3 @@ void BaseObject::Free()
         rect_.h = 0;
     }
 }
-
-
-//int BaseObject::ShowMenu(SDL_Renderer* des, TTF_Font* font)
-//{
-//    bool ret = LoadImg("img//menu_background.png", g_screen);
-//    //std::cout << ret;
-//    //return ret;
-//
-//    if (ret == true)
-////    {
-//        return 1;
-//
-//    else return 0;
-////    }
-////    else
-////    {
-//        const int MenuItemNum = 2;
-//        SDL_Rect pos_arr[MenuItemNum];
-//        pos_arr[0].x = 200;
-//        pos_arr[0].y = 400;
-//
-//        pos_arr[1].x = 200;
-//        pos_arr[1].y = 450;
-//
-//        TextObject text_menu[MenuItemNum];
-//
-//        text_menu[0].SetText("CLICK TO START");
-//        text_menu[0].setColor(TextObject::WHITE_TEXT);
-//        text_menu[0].SetRect(pos_arr[0].x, pos_arr[0].y);
-//
-//        text_menu[1].SetText("EXIT");
-//        text_menu[1].setColor(TextObject::RED_TEXT);
-//        text_menu[1].SetRect(pos_arr[1].x, pos_arr[1].y);
-//
-//
-//        bool selected[MenuItemNum] = {0, 0};
-//        int xm = 0;
-//        int ym = 0;
-//        SDL_Event m_event;
-//        while (true)
-//        {
-//            Render(des);
-//            for (int i = 0; i < MenuItemNum; ++i)
-//            {
-//                text_menu[i].loadFromRenderedText(g_font_text, g_screen);
-//            }
-//
-//            while (SDL_PollEvent(&m_event))
-//            {
-//                switch (m_event.type)
-//                {
-//                case SDL_QUIT:
-//                    return 1;
-//                case SDL_MOUSEMOTION:
-//                {
-//                    xm = m_event.motion.x;
-//                    ym = m_event.motion.y;
-//
-//                    for (int i = 0; i < MenuItemNum; i++)
-//                    {
-//                        if (SDLCommonFunction::CheckFocusWithRect(xm, ym, text_menu[i].GetRect()))
-//                        {
-//                            if (selected[i] == false)
-//                            {
-//                                selected[i] = 1;
-//                                text_menu[i].setColor(TextObject::RED_TEXT);
-//                            }
-//                        }
-//                        else
-//                        {
-//                            if (selected[i] == true)
-//                            {
-//                                selected[i] = 0;
-//                                text_menu[i].setColor(TextObject::WHITE_TEXT);
-//                            }
-//                        }
-//                    }
-//                }
-//                break;
-//                case SDL_MOUSEBUTTONDOWN:
-//                {
-//                    xm = m_event.button.x;
-//                    ym = m_event.button.y;
-//
-//                    for (int i = 0; i < MenuItemNum; i++)
-//                    {
-//                        if (SDLCommonFunction::CheckFocusWithRect(xm, ym, text_menu[i].GetRect()))
-//                        {
-//                            return i;
-//                        }
-//                    }
-//                }
-//                break;
-//                case SDL_KEYDOWN:
-//                    if (m_event.key.keysym.sym == SDLK_ESCAPE)
-//                    {
-//                        return 1;
-//                    }
-//                default:
-//                    break;
-//                }
-//            }
-//
-//            //SDL_Flip(des);
-////        }
-////
-//    }
-//}

@@ -8,7 +8,7 @@ MenuGame::MenuGame()
 
 MenuGame::~MenuGame()
 {
-
+    m_acType = AC_NONE;
 }
 
 bool MenuGame::LoadButton(std::string path, SDL_Renderer* screen)
@@ -44,85 +44,82 @@ bool MenuGame::IsChosen(SDL_Event event)
 	}
 }
 
-void MenuGame::HandlePlayButton(SDL_Event event, SDL_Renderer* screen, bool &InMenuGame, TTF_Font* font)
+void MenuGame::HandlePlayButton(SDL_Event event, SDL_Renderer* screen, bool &InMenuGame)
 {
-    SDL_Rect pos_arr_start;
-    pos_arr_start.x = 200;
-    pos_arr_start.y = 400;
-
-    TextObject text_start;
-
-    text_start.SetText("CLICK TO START");
-    text_start.setColor(TextObject::WHITE_TEXT);
-    text_start.SetRect(pos_arr_start.x, pos_arr_start.y);
-
-    int i = 0;
-    while (i % 5 == 0) {
-        text_start.loadFromRenderedText(font, screen);
-        i++;
-        if (i = 1000) i = 0;
-    }
-
 	if (IsChosen(event))
 	{
-	    text_start.setColor(TextObject::RED_TEXT);
-	    text_start.loadFromRenderedText(font, screen);
+        LoadButton("img//PlayButton2.png",screen);
 	    if(event.type == SDL_MOUSEBUTTONDOWN)
 		{
             InMenuGame = false;
+            Mix_Chunk* beep_sound = Mix_LoadWAV(kSoundBeep);
+            if (beep_sound != NULL)
+                Mix_PlayChannel(-1, beep_sound, 0);
 		}
     }
     else
     {
-        text_start.setColor(TextObject::WHITE_TEXT);
-	    int i = 0;
-        while (i % 5 == 0) {
-            text_start.loadFromRenderedText(font, screen);
-            i++;
-            if (i = 1000) i = 0;
-        }
+        LoadButton("img//PlayButton.png",screen);
     }
 }
 
-void MenuGame::HandleQuitButton(SDL_Event event, SDL_Renderer* screen, bool &quit, TTF_Font* font)
+void MenuGame::HandleQuitButton(SDL_Event event, SDL_Renderer* screen, bool &quit, bool &InMenu)
 {
-    SDL_Rect pos_arr_quit;
-    pos_arr_quit.x = 200;
-    pos_arr_quit.y = 450;
-
-    TextObject text_quit;
-    text_quit.SetText("EXIT");
-    text_quit.setColor(TextObject::WHITE_TEXT);
-    text_quit.SetRect(pos_arr_quit.x, pos_arr_quit.y);
-
     if (IsChosen(event))
 	{
-	    text_quit.setColor(TextObject::RED_TEXT);
-	    text_quit.loadFromRenderedText(font, screen);
+	    LoadButton("img//QuitButton2.png",screen);
 	    if(event.type == SDL_MOUSEBUTTONDOWN)
 		{
-            quit = !quit;
+            quit = true;
+            InMenu = false;
+            Mix_Chunk* beep_sound = Mix_LoadWAV(kSoundBeep);
+            if (beep_sound != NULL)
+                Mix_PlayChannel(-1, beep_sound, 0);
 		}
     }
     else
     {
-        text_quit.setColor(TextObject::WHITE_TEXT);
-        text_quit.loadFromRenderedText(font, screen);
+        LoadButton("img//QuitButton.png",screen);
     }
 }
 
-//void MenuGame::HandleRetryButton(SDL_Event event, SDL_Renderer* screen, bool& quit, vector<ThreatObject*> threats_list, MainObject &p_object, vector<BulletObject*> &bullet_list, bool &quit)
-//{
-//    if (IsInside(event))
-//	{
-//	    LoadButton("img//retry2.png",screen);
-//	    if(event.type==SDL_MOUSEBUTTONDOWN)
-//		{
-//		    quit = false;
-//		}
-//	}
-//	else
-//    {
-//        LoadButton("retry.png",screen);
-//    }
-//}
+void MenuGame::HandleQuitButtonAtGameOver(SDL_Event event, SDL_Renderer* screen, bool &quit, bool &InMenu)
+{
+    if (IsChosen(event))
+	{
+	    LoadButton("img//QuitButton2 - Copy.png",screen);
+	    if(event.type == SDL_MOUSEBUTTONDOWN)
+		{
+            quit = true;
+            InMenu = false;
+            Mix_Chunk* beep_sound = Mix_LoadWAV(kSoundBeep);
+            if (beep_sound != NULL)
+                Mix_PlayChannel(-1, beep_sound, 0);
+		}
+    }
+    else
+    {
+        LoadButton("img//QuitButton - Copy.png",screen);
+    }
+}
+
+void MenuGame::HandleRetryButton(SDL_Event event, SDL_Renderer* screen, bool &quit)
+{
+    if (IsChosen(event))
+	{
+	    LoadButton("img//PlayAgainButton2.png",screen);
+	    if(event.type==SDL_MOUSEBUTTONDOWN)
+		{
+		    quit = false;
+            Mix_Chunk* beep_sound = Mix_LoadWAV(kSoundBeep);
+            if (beep_sound != NULL)
+                Mix_PlayChannel(-1, beep_sound, 0);
+
+            m_acType = AC_REPLAY;
+		}
+	}
+	else
+    {
+        LoadButton("img//PlayAgainButton.png",screen);
+    }
+}

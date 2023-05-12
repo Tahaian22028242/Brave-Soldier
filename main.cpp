@@ -18,7 +18,8 @@ BaseObject g_menu;
 BaseObject g_over;
 
 TTF_Font* g_font_text = NULL;
-TTF_Font* g_font_menu = NULL;
+
+void FreeThreats(std::vector<ThreatsObject*>& list1, std::vector<ThreatsObject*>& list2);
 
 bool InitData()
 {
@@ -66,8 +67,7 @@ bool InitData()
         }
 
         g_font_text = TTF_OpenFont("font//dlxfont.ttf", 15);
-        g_font_menu = TTF_OpenFont("font//ryujin-attack.regular.ttf", 30);
-        if (g_font_text == NULL || g_font_menu == NULL)
+        if (g_font_text == NULL)
         {
             std::cout << "Open Font Error!";
             return false;
@@ -101,7 +101,6 @@ bool InitData()
 
 void close()
 {
-    g_background.Free();
     SDL_DestroyRenderer(g_screen);
     g_screen = NULL;
     SDL_DestroyWindow(g_window);
@@ -173,7 +172,6 @@ std::vector<ThreatsObject*> MakeDynamicThreatList()
 std::vector<ThreatsObject*> MakeStaticThreatList()
 {
     std::vector<ThreatsObject*> list_static_threats;
-
     ThreatsObject* threat_objs2 = new ThreatsObject[NUM_STATIC_THREAT];
     for (int i = 0; i < NUM_STATIC_THREAT; i++)
     {
@@ -217,6 +215,7 @@ int main(int argc, char* argv[])
     game_map.LoadMap(g_name_map);
     game_map.LoadMapTiles(g_screen);
 
+replay_label:
     MainObject p_player;
     p_player.LoadImg(g_name_main_right, g_screen);
     p_player.set_clips();
@@ -261,21 +260,23 @@ int main(int argc, char* argv[])
     money_count.setColor(TextObject::WHITE_TEXT);
 
     int num_die = 0;
-    int num_bullet_to_boss = 0;
     unsigned int mark_value = 0;
 
     MenuGame StartButton;
     MenuGame ExitButton;
-    //MenuGame ReplayButton;
+    MenuGame ExitButton2;
+    MenuGame ReplayButton;
 
     g_menu.LoadImg(g_name_menu, g_screen);
     g_over.LoadImg(g_name_over, g_screen);
 
     bool in_menu = true;
+    bool end_game = false;
     bool quit = false;
 
     while (in_menu)
     {
+        fps.start();
         if (!Mix_Playing(1))
         {
             Mix_PlayChannel(1, g_menu_music, -1);
@@ -285,22 +286,21 @@ int main(int argc, char* argv[])
             if(g_event.type == SDL_QUIT)
             {
                 in_menu = false;
+                quit = true;
             }
-            StartButton.HandlePlayButton(g_event, g_screen, in_menu, g_font_menu);
-            ExitButton.HandleQuitButton(g_event, g_screen, in_menu, g_font_menu);
+            StartButton.HandlePlayButton(g_event, g_screen, in_menu);
+            ExitButton.HandleQuitButton(g_event, g_screen, quit, in_menu);
         }
 
-        StartButton.SetRect(200, 400);
-        ExitButton.SetRect(200, 450);
-        g_menu.Render(g_screen);
+        StartButton.SetRect(300, 300);
+        ExitButton.SetRect(575, 300);
 
+        g_menu.Render(g_screen);
         StartButton.Render(g_screen);
         ExitButton.Render(g_screen);
         SDL_RenderPresent(g_screen);
 
     }
-
-    bool end_game = false;
 
     while (!quit)
     {
@@ -315,7 +315,7 @@ int main(int argc, char* argv[])
             Mix_HaltChannel(3);
             while (SDL_PollEvent(&g_event) != 0)
             {
-            //User requests quit
+                //User requests quit
                 if(g_event.type == SDL_QUIT)
                 {
                     quit = true;
@@ -331,7 +331,7 @@ int main(int argc, char* argv[])
 
             Map ga_map = game_map.GetMap();
 
-            //p_player.SpawnBullet(g_screen);
+            p_player.SpawnBullet(g_screen, g_sound_bullet_main);
             p_player.HandleBullet(g_screen);
             p_player.SetMapXY(ga_map.start_x_, ga_map.start_y_);
             p_player.DoPlayer(ga_map);
@@ -353,18 +353,19 @@ int main(int argc, char* argv[])
             player_power.Show(g_screen);
             player_money.Show(g_screen);
 
-            //Show threats
+
             SDL_Rect rect_player = p_player.GetRectFrame();
-            //bool is_big_threat = false;
+
+
+            //Show threats
             for (int i = 0; i < (int)threats_list1.size(); i++)
             {
                 ThreatsObject* obj_threat1 = threats_list1.at(i);
                 if (obj_threat1 != NULL)
                 {
                     obj_threat1->SetMapXY(ga_map.start_x_, ga_map.start_y_);
-                    obj_threat1->ImpMoveType(g_screen);
                     obj_threat1->DoThreats(ga_map, g_screen);
-                    obj_threat1->MakeBulletForSmallThreats(g_screen, SCREEN_WIDTH, SCREEN_HEIGHT);
+                    obj_threat1->MakeBulletForSmallThreats(ga_map, g_screen, SCREEN_WIDTH, SCREEN_HEIGHT);
                     obj_threat1->Show(g_screen);
 
                     //COLLISION THREAT BULLET -> MAIN OBJECT
@@ -373,13 +374,13 @@ int main(int argc, char* argv[])
                     for (int am = 0; am < (int)th_bullet_list1.size(); am++)
                     {
                         BulletObject* th_bullet1 = th_bullet_list1.at(am);
-                        if (th_bullet1 != NULL)
+                        if (th_bullet1 != NULL && th_bullet1->get_is_move() == true)
                         {
                             is_col1 = SDLCommonFunction::CheckCollision(th_bullet1->GetRect(), rect_player);
                             if (is_col1 == true)
                             {
-                                obj_threat1->RemoveBullet(am);
-                                //Mix_PlayChannel(-1, g_sound_explosion, 0);
+                                th_bullet1->set_is_move(false);
+                                Mix_PlayChannel(-1, g_sound_explosion, 0);
                                 break;
                             }
                         }
@@ -422,7 +423,7 @@ int main(int argc, char* argv[])
                     obj_threat2->SetMapXY(ga_map.start_x_, ga_map.start_y_);
                     obj_threat2->ImpMoveType(g_screen);
                     obj_threat2->DoThreats(ga_map, g_screen);
-                    obj_threat2->MakeBulletForBigThreats(g_screen, SCREEN_WIDTH, SCREEN_HEIGHT);
+                    obj_threat2->MakeBulletForBigThreats(ga_map, g_screen, SCREEN_WIDTH, SCREEN_HEIGHT);
                     obj_threat2->Show(g_screen);
 
                     //COLLISION THREAT BULLET -> MAIN OBJECT
@@ -431,12 +432,13 @@ int main(int argc, char* argv[])
                     for (int am = 0; am < (int)th_bullet_list2.size(); am++)
                     {
                         BulletObject* th_bullet2 = th_bullet_list2.at(am);
-                        if (th_bullet2 != NULL)
+                        if (th_bullet2 != NULL && th_bullet2->get_is_move() == true)
                         {
                             is_col1 = SDLCommonFunction::CheckCollision(th_bullet2->GetRect(), rect_player);
                             if (is_col1 == true)
                             {
-                                obj_threat2->RemoveBullet(am);
+                                th_bullet2->set_is_move(false);
+                                Mix_PlayChannel(-1, g_sound_explosion, 0);
                                 break;
                             }
                         }
@@ -447,7 +449,6 @@ int main(int argc, char* argv[])
                     bool is_col2 = SDLCommonFunction::CheckCollision(rect_player, rect_threat2);
                     if (is_col2 || is_col1)
                     {
-                        //walk_object.set_is_move(true);
                         int height_exp_frame = exp_main.get_frame_height();
                         int width_exp_frame = exp_main.get_frame_width();
                         for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
@@ -459,7 +460,6 @@ int main(int argc, char* argv[])
                             exp_main.Show(g_screen);
                         }
                         num_die++;
-                        //Re-render main object after collision
                         p_player.SetRect(0, 0);
                         p_player.set_comeback_time(COMEBACK_TIME);
                         SDL_Delay(DELAY_TIME_FOR_COLLISION);
@@ -474,27 +474,34 @@ int main(int argc, char* argv[])
 
             //COLLISION BOSS BULLET -> MAIN OBJECT
             bool is_col_boss_bullet = false;
-            std::vector<BulletObject*> boss_bullet_list = bossObject.get_bullet_list();
-            for (int am = 0; am < (int)boss_bullet_list.size(); am++)
+            if (bossObject.CheckBossDie() == false)
             {
+                std::vector<BulletObject*> boss_bullet_list = bossObject.get_bullet_list();
+                for (int am = 0; am < (int)boss_bullet_list.size(); am++)
+                {
                 BulletObject* boss_bullet = boss_bullet_list.at(am);
-                if (boss_bullet != NULL)
+                if (boss_bullet != NULL && boss_bullet->get_is_move() == true)
                 {
                     is_col_boss_bullet = SDLCommonFunction::CheckCollision(boss_bullet->GetRect(), rect_player);
                     if (is_col_boss_bullet == true)
                     {
-                        bossObject.RemoveBullet(am);
+                        boss_bullet->set_is_move(false);
+                        Mix_PlayChannel(-1, g_sound_explosion, 0);
                         break;
                     }
+                }
                 }
             }
 
             //COLLISION BOSS OBJECT -> MAIN OBJECT
-            bool is_col_boss = SDLCommonFunction::CheckCollision(rect_player, bossObject.GetRectFrame());
+            bool is_col_boss = false;
+            if ( bossObject.CheckBossDie() == false)
+            {
+                SDLCommonFunction::CheckCollision(rect_player, bossObject.GetRectFrame());
+            }
+
             if (is_col_boss || is_col_boss_bullet)
             {
-                //obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
-                //walk_object.set_is_move(true);
                 int width_exp_frame = exp_main.get_frame_height();
                 int height_exp_frame = exp_main.get_frame_width();
                 for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
@@ -518,6 +525,13 @@ int main(int argc, char* argv[])
                 player_power.Render(g_screen);
                 continue;
             }
+            //Die condition
+            if (num_die > 3)
+            {
+                Mix_PlayChannel(-1, g_sound_explosion_dead, 0);
+                end_game = true;
+            }
+
 
             //COLLISION THREAT -> Main Bullet
             std::vector<BulletObject*> bullet_arr = p_player.get_bullet_list();
@@ -525,12 +539,13 @@ int main(int argc, char* argv[])
             int frame_exp_width = exp_threats.get_frame_width();
             int frame_exp_height = exp_threats.get_frame_width();
 
+            // kiem tra tung vien dan cua main voi moi threat
             for (int am = 0; am < (int)bullet_arr.size(); ++am)
             {
                 BulletObject* p_bullet = bullet_arr.at(am);
-                if (p_bullet != NULL)
+                if (p_bullet != NULL && p_bullet->get_is_move() == true)
                 {
-                    //p_bullet->CheckToMap(ga_map, g_screen);
+
                     for (int i = 0; i < (int)threats_list1.size(); i++)
                     {
                         ThreatsObject* obj_threat1 = threats_list1.at(i);
@@ -550,31 +565,13 @@ int main(int argc, char* argv[])
                                 exp_threats.set_frame(ex);
                                 exp_threats.SetRect(x_pos, y_pos);
                                 exp_threats.Show(g_screen);
-                                SDL_Rect threat_rect = obj_threat1->GetRectFrame();
-
-                                bool is_col = SDLCommonFunction::CheckCollision(p_bullet->GetRect(), threat_rect);
-                                if (is_col)
-                                {
-                                    mark_value++;
-                                    for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
-                                    {
-                                        //set exp pos
-                                        int x_pos = p_bullet->GetRect().x - frame_exp_width*0.5;
-                                        int y_pos = p_bullet->GetRect().y - frame_exp_height*0.5;
-
-                                        exp_threats.set_frame(ex);
-                                        exp_threats.SetRect(x_pos, y_pos);
-                                        exp_threats.Show(g_screen);
-                                    }
-
-                                    p_player.RemoveBullet(am);
-
-                                    obj_threat1->Free();
-                                    threats_list1.erase(threats_list1.begin() + i);
-                                    Mix_PlayChannel(-1, g_sound_explosion, 0);
-                                }
                             }
-                        //obj_threat1->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+                            p_bullet->set_is_move(false);
+                            obj_threat1->Free();
+                            threats_list1.erase(threats_list1.begin() + i);
+                            Mix_PlayChannel(-1, g_sound_explosion, 0);
+                            break;
                         }
                     }
 
@@ -598,41 +595,43 @@ int main(int argc, char* argv[])
                                 exp_threats.SetRect(x_pos, y_pos);
                                 exp_threats.Show(g_screen);
                             }
-//
-//                        obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-                            p_player.RemoveBullet(am);
-
+                            p_bullet->set_is_move(false);
                             obj_threat2->Free();
                             threats_list2.erase(threats_list2.begin() + i);
-
                             Mix_PlayChannel(-1, g_sound_explosion, 0);
+                            break;
                         }
+                        // vien dan het vai tro, ko check voi cac con quai khac nua
                     }
+
 
                     //COLLISION BOSS -> Main Bullet
-                    bool is_col_bullet_boss = SDLCommonFunction::CheckCollision(p_bullet->GetRect(), bossObject.GetRectFrame());
-                    //int num_bullet_to_boss = 0;
-                    if (is_col_bullet_boss)
+                    bool bb = bossObject.CheckBossDie();
+                     if (p_bullet->get_is_move() == true && bossObject.CheckBossDie() == false) // neu vien dan da va cham voi quai trc do roi thi thoi
                     {
-                        num_bullet_to_boss++;
-                        for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
+                        bool is_col_bullet_boss = SDLCommonFunction::CheckCollision(p_bullet->GetRect(), bossObject.GetRectFrame());
+                        if (is_col_bullet_boss)
                         {
-                        //set exp pos
-                        int x_pos = p_bullet->GetRect().x - frame_exp_width*0.5;
-                        int y_pos = p_bullet->GetRect().y - frame_exp_height*0.5;
-                        exp_threats.set_frame(ex);
-                        exp_threats.SetRect(x_pos, y_pos);
-                        exp_threats.Show(g_screen);
+                            bossObject.PlusBulletDie();
+                            for (int ex = 0; ex < NUM_FRAME_EXP; ex++)
+                            {
+                                //set exp pos
+                                int x_pos = p_bullet->GetRect().x - frame_exp_width*0.5;
+                                int y_pos = p_bullet->GetRect().y - frame_exp_height*0.5;
+                                exp_threats.set_frame(ex);
+                                exp_threats.SetRect(x_pos, y_pos);
+                                exp_threats.Show(g_screen);
+                            }
+                            p_bullet->set_is_move(false);
                         }
-                        //obj_threat->Reset(SCREEN_WIDTH, SCREEN_HEIGHT);
-                        p_player.RemoveBullet(am);
-                    }
 
-                    if (num_bullet_to_boss >= 10)
-                    {
-                        bossObject.Free();
-                        Mix_PlayChannel(-1, g_sound_explosion, 0);
+                        bool bDie = bossObject.CheckBulletDie();
+                        if (bDie)
+                        {
+                            bossObject.ResetBulletDie();
+                            Mix_PlayChannel(-1, g_sound_explosion, 0);
+                        }
                     }
                 }
             }
@@ -643,11 +642,10 @@ int main(int argc, char* argv[])
             std::string str_val = std::to_string(val_time);
             if (val_time <= 0)
             {
-                if (MessageBox(NULL, "Time limit exceeded!", "GAME OVER", MB_OK | MB_ICONSTOP) == IDOK)
-                {
-                    quit = true;
-                    break;
-                }
+                Mix_Chunk* two_beep_chunk = Mix_LoadWAV(g_name_sound_increase);
+                if (two_beep_chunk != NULL)
+                    Mix_PlayChannel(-1, two_beep_chunk, 0 );
+                end_game = true;
             }
             else
             {
@@ -696,55 +694,68 @@ int main(int argc, char* argv[])
         else
         {
             Mix_HaltChannel(2);
-
             if (!Mix_Playing(3))
             {
-                Mix_PlayChannel(3, g_game_over_music,-1);
+                Mix_PlayChannel(3, g_game_over_music, -1);
             }
+
+            while (SDL_PollEvent(&g_event) != 0)
+            {
+                if(g_event.type == SDL_QUIT)
+                {
+                    quit = true;
+                }
+                ExitButton2.HandleQuitButtonAtGameOver(g_event, g_screen, quit, in_menu);
+                ReplayButton.HandleRetryButton(g_event, g_screen, end_game);
+            }
+
+            ExitButton2.SetRect(470, 525);
+            ReplayButton.SetRect(350, 450);
 
             g_over.Render(g_screen);
+            ReplayButton.Render(g_screen);
+            ExitButton2.Render(g_screen);
 
-            while(SDL_PollEvent(&g_event)!=0)
+            if (ReplayButton.GetType() == MenuGame::ActionType::AC_REPLAY)
             {
-                if(g_event.type==SDL_QUIT)
-                {
-                    quit  = true;
-                }
-                 ExitButton.HandleQuitButton(g_event, g_screen, quit, g_font_menu);
-                 //ReplayButton.HandleRetryButton(g_event, g_screen, Enemy_List, spaceship,Bullet_List,wave,score,GameOver);
-            }
-            ExitButton.SetRect(200, 450);
-            //ReplayButton.SetRect(50,SCREEN_HEIGHT-ReplayButton.get_height_frame()-80);
-            ExitButton.Render(g_screen);
-            //ReplayButton.Render(g_screen);
+                ReplayButton.SetType(MenuGame::AC_NONE);
+                end_game = false;
 
+                p_player.Free();
+                bossObject.Free();
+                FreeThreats(threats_list1, threats_list2);
+                goto replay_label;
+            }
+            //Update screen
             SDL_RenderPresent(g_screen);
         }
     }
 
+    p_player.Free();
+    bossObject.Free();
+    FreeThreats(threats_list1, threats_list2);
+    close();
+    return 0;
+}
 
-    for (int i = 0; i < (int)threats_list1.size(); ++i)
+void FreeThreats(std::vector<ThreatsObject*>& list1, std::vector<ThreatsObject*>& list2)
+{
+    for (int i = 0; i < (int)list1.size(); ++i)
     {
-        ThreatsObject* p_threat = threats_list1.at(i);
+        ThreatsObject* p_threat = list1.at(i);
         if (p_threat)
         {
             p_threat->Free();
             p_threat = NULL;
         }
     }
-    threats_list1.clear();
+    list1.clear();
 
-    for (int i = 0; i < (int)threats_list2.size(); i++)
+    for (int i = 0; i < (int)list2.size(); i++)
     {
-        ThreatsObject* p_threat = threats_list2.at(i);
+        ThreatsObject* p_threat = list2.at(i);
         p_threat->Free();
         p_threat = NULL;
     }
-    threats_list2.clear();
-
-    bossObject.Free();
-
-    close();
-
-    return 0;
+    list2.clear();
 }

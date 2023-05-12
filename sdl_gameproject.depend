@@ -270,14 +270,14 @@
 	"BossObject.h"
 	<iostream>
 
-1683563886 source:c:\brave soldier\src\baseobject.cpp
+1683905775 source:c:\brave soldier\src\baseobject.cpp
 	"BaseObject.h"
 	"TextObject.h"
 
-1683689848 c:\brave soldier\include\baseobject.h
+1683735099 c:\brave soldier\include\baseobject.h
 	"CommonFunction.h"
 
-1683708600 c:\brave soldier\include\commonfunction.h
+1683923640 c:\brave soldier\include\commonfunction.h
 	<windows.h>
 	<vector>
 	<string>
@@ -290,21 +290,21 @@
 	"CommonFunction.h"
 	"BaseObject.h"
 
-1683565291 source:c:\brave soldier\src\bossobject.cpp
+1683924020 source:c:\brave soldier\src\bossobject.cpp
 	"BossObject.h"
 
-1681091199 c:\brave soldier\include\bossobject.h
+1683924228 c:\brave soldier\include\bossobject.h
 	"BaseObject.h"
 	"CommonFunction.h"
 	"BulletObject.h"
 
-1683555871 c:\brave soldier\include\bulletobject.h
+1683922473 c:\brave soldier\include\bulletobject.h
 	"BaseObject.h"
 
-1683555871 source:c:\brave soldier\src\bulletobject.cpp
+1683902931 source:c:\brave soldier\src\bulletobject.cpp
 	"BulletObject.h"
 
-1683368358 source:c:\brave soldier\src\commonfunction.cpp
+1683918292 source:c:\brave soldier\src\commonfunction.cpp
 	"CommonFunction.h"
 
 1683565291 source:c:\brave soldier\src\explosionobject.cpp
@@ -314,10 +314,10 @@
 	"CommonFunction.h"
 	"BaseObject.h"
 
-1683380767 source:c:\brave soldier\src\gamemap.cpp
+1683921519 source:c:\brave soldier\src\gamemap.cpp
 	"GameMap.h"
 
-1683380767 c:\brave soldier\include\gamemap.h
+1683906591 c:\brave soldier\include\gamemap.h
 	"CommonFunction.h"
 	"BaseObject.h"
 
@@ -333,10 +333,10 @@
 
 1679411291 c:\brave soldier\include\imptimer.h
 
-1683565291 source:c:\brave soldier\src\mainobject.cpp
+1683897956 source:c:\brave soldier\src\mainobject.cpp
 	"MainObject.h"
 
-1683543107 c:\brave soldier\include\mainobject.h
+1683906575 c:\brave soldier\include\mainobject.h
 	"CommonFunction.h"
 	"BaseObject.h"
 	"BulletObject.h"
@@ -352,18 +352,32 @@
 1683565291 source:c:\brave soldier\src\textobject.cpp
 	"TextObject.h"
 
-1683689848 source:c:\brave soldier\src\threatsobject.cpp
+1683904928 source:c:\brave soldier\src\threatsobject.cpp
 	"ThreatsObject.h"
 
-1683554974 c:\brave soldier\include\threatsobject.h
+1683904333 c:\brave soldier\include\threatsobject.h
 	"CommonFunction.h"
 	"BaseObject.h"
 	"BulletObject.h"
 
-1683704460 source:c:\brave soldier\src\menugame.cpp
+1683917697 source:c:\brave soldier\src\menugame.cpp
 	"MenuGame.h"
 
-1683707481 c:\brave soldier\include\menugame.h
+1683918291 c:\brave soldier\include\menugame.h
 	"BaseObject.h"
+
+1683919785 source:c:\brave soldier\main.cpp
+	"CommonFunction.h"
+	"BaseObject.h"
+	"GameMap.h"
+	"MainObject.h"
+	"ImpTimer.h"
+	"ThreatsObject.h"
+	"ExplosionObject.h"
 	"TextObject.h"
+	"PlayerPower.h"
+	"Geometric.h"
+	"BossObject.h"
+	"MenuGame.h"
+	<iostream>
 

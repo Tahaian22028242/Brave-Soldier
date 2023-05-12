@@ -28,10 +28,14 @@ public:
     void setColor(const Uint8& red, const Uint8& green, const Uint8& blue);
     void setAlpha(const Uint8& alpha);
     void setBlendMode(const SDL_BlendMode& blending);
-    //int ShowMenu(SDL_Renderer* des, TTF_Font* font);
-//protected:
+    //frame
+    int get_width_frame() const {return width_frame;}
+    int get_height_frame() const {return height_frame;}
+protected:
     SDL_Texture* p_object_;
     SDL_Rect rect_;
+    int width_frame;
+    int height_frame;
 };
 
 

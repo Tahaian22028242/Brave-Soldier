@@ -35,7 +35,6 @@ public:
         game_map_ = gMap;
     }
 
-    //SDL_Rect GetRectFrame();
 private:
     Map game_map_;
     TileMat tile_mat_[MAX_TILES];

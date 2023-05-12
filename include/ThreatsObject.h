@@ -25,7 +25,6 @@ class ThreatsObject : public BaseObject
 public:
     ThreatsObject();
     ~ThreatsObject();
-    //void HandleInputAction(SDL_Event events, SDL_Rect rect_obj);
     void HandleMove(const int x_boder, const int y_border);
 
     void set_x_val(int xp)
@@ -64,8 +63,8 @@ public:
 
     void InitBulletForBigThreats(BulletObject* p_bullet, SDL_Renderer* screen);
     void InitBulletForSmallThreats(BulletObject* p_bullet,  SDL_Renderer* screen);
-    void MakeBulletForBigThreats(SDL_Renderer* des, const int& x_limit, const int& y_limit);
-    void MakeBulletForSmallThreats(SDL_Renderer* des, const int& x_limit, const int& y_limit);
+    void MakeBulletForBigThreats(Map& g_map, SDL_Renderer* des, const int& x_limit, const int& y_limit);
+    void MakeBulletForSmallThreats(Map& g_map, SDL_Renderer* des, const int& x_limit, const int& y_limit);
 
     void Reset(const int x_border, const int y_border, bool is_big_threat);
 

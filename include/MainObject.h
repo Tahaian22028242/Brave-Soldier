@@ -50,8 +50,8 @@ public:
         p_bullet_list_ = bullet_list;
     }
 
-    //void SpawnBullet(SDL_Renderer* screen);
     void HandleBullet(SDL_Renderer* des);
+    void SpawnBullet(SDL_Renderer* screen, Mix_Chunk* bullet_sound);
     void RemoveBullet(const int& idx);
 
     int get_frame_width() const
@@ -73,11 +73,15 @@ public:
     {
         return money_count_;
     };
-private:
 
+private:
     int money_count_;
+
     //Bullet list
     std::vector<BulletObject*> p_bullet_list_;
+    bool continuous_bullet;
+    unsigned long long current_time;
+    unsigned long long last_time;
 
     bool is_jump_;
 
@@ -88,7 +92,7 @@ private:
 
     bool on_ground_;
     int comeback_time_;
-    //int number_of_comeback_time_;
+
     int map_x_;
     int map_y_;
 
@@ -100,9 +104,7 @@ private:
     int width_frame_;
     int height_frame_;
 
-//    bool continuous_bullet;
-//    int current_time;
-//    int last_time;
+
 };
 
 
