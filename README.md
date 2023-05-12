@@ -2,7 +2,8 @@ SDL_GAMEPROJECT
  
 -> Become a hero and get to save the world!
 
-Game name: Brave Soldier (still in developments).
+Game name: Brave Soldier.
+**_Link video demo_** : https://drive.google.com/file/d/1SJoo_zB5tHje2JmyFVuUord3RzvFmKb0/view?usp=sharing
 
 Description:
 - The main character is a soldier who will take part in a long journey to protect the world from the evil forces.
@@ -16,10 +17,10 @@ Requirements:
 - Microsoft Visual Studio or Code::Blocks 20.03.
 - SDL_Librari(es) (SDL, SDL_image, SDL_ttf, SDL_mixer).
   With this game, I used:
-  + SDL2-2.26.2
-  + SDL2_image-2.6.2
-  + SDL2_ttf-2.20.2
-  + SDL2_mixer-2.6.3
+  + SDL2-2.26.2 (link download : https://github.com/libsdl-org/SDL/releases/download/release-2.26.2/SDL2-2.26.2.zip)
+  + SDL2_image-2.6.2 (link download : https://github.com/libsdl-org/SDL_image/releases/download/release-2.6.2/SDL2_image-2.6.2.zip)
+  + SDL2_ttf-2.20.2 (link download :l https://github.com/libsdl-org/SDL_ttf/releases/download/release-2.20.2/SDL2_ttf-2.20.2.zip)
+  + SDL2_mixer-2.6.3 (link download : https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.6.3/SDL2_mixer-2.6.3.zip)
   
 Credits:
 - Source Youtube : "Game C++ SDL 2.0 series" of "Phát Triển Phần Mềm 123A-Z" channel.
