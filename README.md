@@ -3,7 +3,8 @@ SDL_GAMEPROJECT
 -> Become a hero and get to save the world!
 
 Game name: Brave Soldier.
-**_Link video demo_** : https://drive.google.com/file/d/1SJoo_zB5tHje2JmyFVuUord3RzvFmKb0/view?usp=sharing
+**_Link video demo_** : + P1: https://drive.google.com/file/d/1OU7hCcx6GS638IxIC7GrJaN0vOTGYW7y/view?usp=sharing
+                        + P2: https://drive.google.com/file/d/1NVpQ-KQtpDhm9zHBa18TGw3LY8ttdgIR/view?usp=sharing
 
 Description:
 - The main character is a soldier who will take part in a long journey to protect the world from the evil forces.
